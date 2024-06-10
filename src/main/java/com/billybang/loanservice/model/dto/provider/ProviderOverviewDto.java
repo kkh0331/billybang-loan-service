@@ -1,11 +1,11 @@
-package com.billybang.loanservice.model.dto.response;
+package com.billybang.loanservice.model.dto.provider;
 
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
-public class ProviderOverview {
+public class ProviderOverviewDto {
 
     private String providerName;
 

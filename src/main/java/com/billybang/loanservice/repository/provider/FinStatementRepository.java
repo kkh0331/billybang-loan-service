@@ -9,5 +9,6 @@ import java.util.Optional;
 public interface FinStatementRepository extends JpaRepository<FinStatement, Long> {
 
     Optional<FinStatement> findTop1ByProviderIdOrderByYearDesc(Integer providerId);
+    List<FinStatement> findTop3ByProviderIdOrderByYearDesc(Integer providerId);
 
 }

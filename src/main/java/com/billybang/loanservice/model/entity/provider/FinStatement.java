@@ -1,6 +1,7 @@
 package com.billybang.loanservice.model.entity.provider;
 
-import com.billybang.loanservice.model.dto.response.ProviderOverview;
+import com.billybang.loanservice.model.dto.provider.FinStatementDto;
+import com.billybang.loanservice.model.dto.provider.ProviderOverviewDto;
 import com.billybang.loanservice.utils.DateUtil;
 import com.billybang.loanservice.utils.NumberUtil;
 import jakarta.persistence.*;
@@ -39,8 +40,8 @@ public class FinStatement {
 
     private Long totalAssets;
 
-    public ProviderOverview convertToProviderOverview(){
-        return ProviderOverview.builder()
+    public ProviderOverviewDto convertToProviderOverviewDto(){
+        return ProviderOverviewDto.builder()
                 .providerName(provider.getProviderName())
                 .imgUrl(provider.getImgUrl())
                 .representativeName(provider.getRepresentativeName())
@@ -53,6 +54,19 @@ public class FinStatement {
                 .creditLevel(provider.getCreditLevel())
                 .employeeCount(NumberUtil.addCommas(provider.getEmployeeCount()))
                 .industryDetail(provider.getIndustryDetail())
+                .build();
+    }
+
+    public FinStatementDto convertToFinStatementDto(){
+        return FinStatementDto.builder()
+                .id(id)
+                .year(year)
+                .salesAmount(NumberUtil.convertToBillion(salesAmount))
+                .businessProfit(NumberUtil.convertToBillion(businessProfit))
+                .netProfit(NumberUtil.convertToBillion(netProfit))
+                .totalAssets(NumberUtil.convertToBillion(totalAssets))
+                .totalLiabilities(NumberUtil.convertToBillion(totalLiabilities))
+                .totalCapital(NumberUtil.convertToBillion(totalCapital))
                 .build();
     }
 
