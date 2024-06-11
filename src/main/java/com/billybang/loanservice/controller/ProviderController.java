@@ -1,6 +1,7 @@
 package com.billybang.loanservice.controller;
 
-import com.billybang.loanservice.api.LoanApi;
+import com.billybang.loanservice.api.ProviderApi;
+import com.billybang.loanservice.model.dto.provider.FinIndicatorDto;
 import com.billybang.loanservice.model.dto.provider.FinStatementDto;
 import com.billybang.loanservice.model.dto.response.ProviderInfoResponseDto;
 import com.billybang.loanservice.model.dto.provider.ProviderOverviewDto;
@@ -15,7 +16,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-public class LoanController implements LoanApi {
+public class ProviderController implements ProviderApi {
 
     private final ProviderService providerService;
 
@@ -24,9 +25,10 @@ public class LoanController implements LoanApi {
         log.info("providerId : {}", providerId);
         ProviderOverviewDto resultProviderOverview = providerService.getProviderOverview(providerId);
         List<FinStatementDto> resultFinStatements = providerService.getFinStatements(providerId);
-        ProviderInfoResponseDto resultProviderInfo = ProviderInfoResponseDto
-                .builder()
+        List<FinIndicatorDto> resultFinIndicators = providerService.getFinIndicators(providerId);
+        ProviderInfoResponseDto resultProviderInfo = ProviderInfoResponseDto.builder()
                 .providerOverview(resultProviderOverview)
+                .financialIndicators(resultFinIndicators)
                 .financialStatements(resultFinStatements)
                 .build();
         return ResponseEntity.ok().body(resultProviderInfo);

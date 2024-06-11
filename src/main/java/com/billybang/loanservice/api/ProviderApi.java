@@ -9,16 +9,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Tag(name = "Loan API", description = "대출 API")
-@RequestMapping("/loans")
-public interface LoanApi {
+@Tag(name = "Loan Provider API", description = "대출 기관 API")
+@RequestMapping("/loans/providers")
+public interface ProviderApi {
 
     @Operation(summary = "대출 기관 정보 조회", description = "대출 상품을 제공하는 대출 기관에 대한 정보 가져옵니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "Bad Request")
     })
-    @GetMapping("/providers/{providerId}")
+    @GetMapping("/{providerId}")
     ResponseEntity getProviderInfo(@PathVariable("providerId") Integer providerId);
 
 }
