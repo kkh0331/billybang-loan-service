@@ -10,6 +10,6 @@ public class FinIndicatorDto {
     String name;
     Float value;
     Double avgValue;
-    Float percent;
+    String grade;
 
 }
