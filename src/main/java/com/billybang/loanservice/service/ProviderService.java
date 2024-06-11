@@ -57,12 +57,12 @@ public class ProviderService {
         Float value = extractValueByProviderId(scoreIndicators, indicatorType, providerId);
         List<Float> scores = extractScoresByIndicatorType(scoreIndicators, indicatorType);
         Double avgValue = scores.stream().mapToDouble(Float::doubleValue).average().orElse(0.0);
-        Float percent = calcPercent(scores, value);
+        String grade = calcGrade(scores, value);
         return FinIndicatorDto.builder()
                 .name(indicatorType.getTypeName())
                 .value(value)
                 .avgValue(avgValue)
-                .percent(percent)
+                .grade(grade)
                 .build();
     }
 
@@ -85,12 +85,15 @@ public class ProviderService {
         };
     }
 
-    private Float calcPercent(List<Float> scores, Float value){
-        float countGreaterThanValue = 0.0f;
-        for(Float score: scores){
-            if(score >= value) countGreaterThanValue++;
-        }
-        return countGreaterThanValue/scores.size()*100;
+    private String calcGrade(List<Float> scores, Float value){
+        long countGreaterThanValue = scores.stream()
+                .filter(score -> score >= value).count();
+        int percent = Math.round((float) countGreaterThanValue / scores.size() * 100);
+        if(percent <= 15) return "최상";
+        else if(percent <= 50) return "상";
+        else if(percent <= 80) return "중";
+        else if(percent <= 90) return "하";
+        else return "최하";
     }
 
 }
