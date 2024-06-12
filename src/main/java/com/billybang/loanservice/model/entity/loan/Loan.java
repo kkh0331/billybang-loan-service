@@ -55,9 +55,9 @@ public class Loan {
 //    @OneToMany(mappedBy = "loan")
 //    private List<LoanPreferredItem> loanPreferredItems;
 
-    // TODO 즐겨찾기 변수 추가
+    // TODO 즐겨찾기 변수 추가 + toLoanDto도 수정
 
-    public LoanDto convertToLoanDto(Long starredLoanId){
+    public LoanDto toLoanDto(){
         return LoanDto.builder()
                 .loanId(id)
                 .providerName(provider.getProviderName())
@@ -68,7 +68,7 @@ public class Loan {
                 .ltv(ltv)
                 .minInterestRate(minInterestRate)
                 .maxInterestRate(maxInterestRate)
-                .starredLoanId(starredLoanId)
+                .starredLoanId(null)
                 .build();
     }
 

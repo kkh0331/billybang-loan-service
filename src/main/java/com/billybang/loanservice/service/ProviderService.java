@@ -34,13 +34,13 @@ public class ProviderService {
     public ProviderOverviewDto getProviderOverview(Integer providerId) {
         FinStatement recentStatement = finStatementRepository.findTop1ByProviderIdOrderByYearDesc(providerId)
                 .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "Provider"));
-        return recentStatement.convertToProviderOverviewDto();
+        return recentStatement.toProviderOverviewDto();
     }
 
     @Transactional
     public List<FinStatementDto> getFinStatements(Integer providerId){
         List<FinStatement> finStatements = finStatementRepository.findTop3ByProviderIdOrderByYearDesc(providerId);
-        return finStatements.stream().map(FinStatement::convertToFinStatementDto).toList();
+        return finStatements.stream().map(FinStatement::toFinStatementDto).toList();
     }
 
     @Transactional
@@ -49,12 +49,12 @@ public class ProviderService {
         List<FinScoreIndicatorDto> scoreIndicators = finIndicatorRepository.findAllByYear(lastYear);
         List<FinIndicatorDto> finIndicators = new ArrayList<>();
         for(IndicatorType indicatorType : IndicatorType.values()){
-            finIndicators.add(convertToFinIndicatorDto(scoreIndicators, indicatorType, providerId));
+            finIndicators.add(toFinIndicatorDto(scoreIndicators, indicatorType, providerId));
         }
         return finIndicators;
     }
 
-    private FinIndicatorDto convertToFinIndicatorDto(List<FinScoreIndicatorDto> scoreIndicators, IndicatorType indicatorType, Integer providerId){
+    private FinIndicatorDto toFinIndicatorDto(List<FinScoreIndicatorDto> scoreIndicators, IndicatorType indicatorType, Integer providerId){
         Float value = extractValueByProviderId(scoreIndicators, indicatorType, providerId);
         List<Float> scores = extractScoresByIndicatorType(scoreIndicators, indicatorType);
         Double avgValue = scores.stream().mapToDouble(Float::doubleValue).average().orElse(0.0);

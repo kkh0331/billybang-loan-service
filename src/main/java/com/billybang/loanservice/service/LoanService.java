@@ -27,33 +27,27 @@ public class LoanService {
         List<Loan> loans = loanRepository.findAll();
         // TODO 사용자와 부동산에 의해서 대출 상품 필터링
         // TODO 우대사항 고려하여 정렬
-        List<LoanCategoryDto> resultLoanCategories = categorizeLoansByLoanType(loans);
+        List<LoanCategoryDto> loanCategoryDtos = loansToLoanCategoryDtos(loans);
         return LoanResponseDto.builder()
                 .buildingName(null) // TODO building 이름 추가
                 .sumCount(loans.size()) // TODO 필터링 후 size로 변경
-                .loanCategories(resultLoanCategories)
+                .loanCategories(loanCategoryDtos)
                 .build();
     }
 
-    private List<LoanCategoryDto> categorizeLoansByLoanType(List<Loan> loans){
+    private List<LoanCategoryDto> loansToLoanCategoryDtos(List<Loan> loans){
         Map<LoanType, List<Loan>> categorizedLoans = loans.stream().collect(Collectors.groupingBy(Loan::getLoanType));
         return categorizedLoans.entrySet().stream()
-                .map(entry -> convertLoansToLoanCategoryDto(entry.getKey(), entry.getValue()))
+                .map(entry -> loansToLoanCategoryDto(entry.getKey(), entry.getValue()))
                 .toList();
     }
 
-    private LoanCategoryDto convertLoansToLoanCategoryDto(LoanType loanType, List<Loan> loans){
+    private LoanCategoryDto loansToLoanCategoryDto(LoanType loanType, List<Loan> loans){
+        List<LoanDto> loanDtos = loans.stream().map(Loan::toLoanDto).toList();
         return LoanCategoryDto.builder()
                 .loanType(loanType.getName())
-                .loans(convertLoansToLoanDtos(loans))
+                .loans(loanDtos)
                 .build();
-    }
-
-    private List<LoanDto> convertLoansToLoanDtos(List<Loan> loans){
-        return loans.stream().map(loan -> {
-            Long starredLoanId = null; //TODO 사용자가 loanId을 즐겨찾기 했는지 로직 추가
-            return loan.convertToLoanDto(starredLoanId);
-        }).toList();
     }
 
 }
