@@ -40,7 +40,7 @@ public class FinStatement {
 
     private Long totalAssets;
 
-    public ProviderOverviewDto convertToProviderOverviewDto(){
+    public ProviderOverviewDto toProviderOverviewDto(){
         return ProviderOverviewDto.builder()
                 .providerName(provider.getProviderName())
                 .imgUrl(provider.getImgUrl())
@@ -57,7 +57,7 @@ public class FinStatement {
                 .build();
     }
 
-    public FinStatementDto convertToFinStatementDto(){
+    public FinStatementDto toFinStatementDto(){
         return FinStatementDto.builder()
                 .id(id)
                 .year(year)

@@ -1,19 +1,18 @@
 package com.billybang.loanservice.model.type;
 
+import lombok.Getter;
+
+@Getter
 public enum IndicatorType {
 
     PROFIT("profit"),
     STABLE("stable"),
     GROWTH("growth");
 
-    private final String typeName;
+    private final String name;
 
-    IndicatorType(String typeName){
-        this.typeName = typeName;
-    }
-
-    public String getTypeName(){
-        return typeName;
+    IndicatorType(String name){
+        this.name = name;
     }
 
 }
