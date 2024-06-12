@@ -80,3 +80,11 @@ INSERT INTO financial_indicators (provider_id, year, profit_score, stable_score,
 (27, 2023, 83.216329, 74.000000, 76.952756),
 (28, 2023, 83.479731, 72.680859, 76.916774),
 (29, 2023, 85.253428, 76.533624, 79.980363);
+
+INSERT INTO loans (provider_id, loan_type, product_name, origin_url, ltv, product_desc, loan_limit, guarantee_agency, min_term, max_term, min_interest_rate, max_interest_rate, interest_rate_type) VALUES
+(1, 'MORTGAGE', 'Home Loan Plus', 'https://www.example.com/home-loan-plus', 80, 'Flexible home loan with competitive rates', 500000000, 'HG', 5, 30, 2.5, 4.5, 'Fixed'),
+(2, 'PERSONAL', 'FlexiCash Personal Loan', 'https://www.example.com/flexicash-personal-loan', NULL, 'Get quick cash with flexible repayment options', 10000000, NULL, 1, 5, 6.0, 12.0, 'Variable'),
+(3, 'JEONSE', 'Dream Jeonse Loan', 'https://www.example.com/dream-jeonse-loan', NULL, 'Low-interest loan for jeonse deposit', 20000000, NULL, 1, 3, 1.0, 2.0, 'Fixed'),
+(1, 'JEONSE', 'Home Loan Plus', 'https://www.example.com/home-loan-plus', 80, 'Flexible home loan with competitive rates', 500000000, 'HG', 5, 30, 2.5, 4.5, 'Fixed'),
+(2, 'PERSONAL', 'FlexiCash Personal Loan', 'https://www.example.com/flexicash-personal-loan', NULL, 'Get quick cash with flexible repayment options', 10000000, NULL, 1, 5, 6.0, 12.0, 'Variable'),
+(3, 'JEONSE', 'Dream Jeonse Loan', 'https://www.example.com/dream-jeonse-loan', NULL, 'Low-interest loan for jeonse deposit', 20000000, NULL, 1, 3, 1.0, 2.0, 'Fixed');
