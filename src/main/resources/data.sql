@@ -89,7 +89,13 @@ INSERT INTO loans (provider_id, loan_type, product_name, origin_url, ltv, produc
 (2, 'PERSONAL', 'FlexiCash Personal Loan', 'https://www.example.com/flexicash-personal-loan', NULL, 'Get quick cash with flexible repayment options', 10000000, NULL, 1, 5, 6.0, 12.0, 'Variable'),
 (3, 'JEONSE', 'Dream Jeonse Loan', 'https://www.example.com/dream-jeonse-loan', NULL, 'Low-interest loan for jeonse deposit', 20000000, NULL, 1, 3, 1.0, 2.0, 'Fixed');
 
-INSERT INTO loan_preferred_items (load_id, item_type, loan_limit) VALUES
+INSERT INTO loan_preferred_items (loan_id, item_type, loan_limit) VALUES
 (1, "NEWLY_MARRIED", 520000000),
 (1, "YOUTH", 550000000),
 (1, "MEDIUM_SIZED", 540000000);
+
+INSERT INTO starred_loans(loan_id, user_id) VALUES
+(1, 1),
+(1, 2),
+(1, 3),
+(2, 1);

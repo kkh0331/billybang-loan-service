@@ -58,8 +58,11 @@ public class Loan {
     private List<LoanPreferredItem> loanPreferredItems;
 
     // TODO 즐겨찾기 변수 추가 + toLoanDto도 수정
+    @OneToMany(mappedBy = "loan")
+    private List<StarredLoan> starredLoans;
 
     public LoanDto toLoanDto(){
+        Long starredLoanId = starredLoans.isEmpty() ? null : starredLoans.get(0).getId();
         return LoanDto.builder()
                 .loanId(id)
                 .providerName(provider.getProviderName())
@@ -70,7 +73,7 @@ public class Loan {
                 .ltv(ltv)
                 .minInterestRate(minInterestRate)
                 .maxInterestRate(maxInterestRate)
-                .starredLoanId(null)
+                .starredLoanId(starredLoanId)
                 .build();
     }
 
@@ -94,6 +97,7 @@ public class Loan {
         }
         List<String> loanPreferredItemNames = loanPreferredItems.stream()
                 .map(loanPreferredItem -> loanPreferredItem.getItemType().getName()).toList();
+        Long starredLoanId = starredLoans.isEmpty() ? null : starredLoans.get(0).getId();
         return LoanDetailResponseDto.builder()
                 .providerId(provider.getId())
                 .providerName(provider.getProviderName())
@@ -110,7 +114,7 @@ public class Loan {
                 .maxInterestRate(maxInterestRate)
                 .interestRateType(interestRateType)
                 .preferentialItems(loanPreferredItemNames)
-                .starredLoanId(null)
+                .starredLoanId(starredLoanId)
                 .build();
     }
 

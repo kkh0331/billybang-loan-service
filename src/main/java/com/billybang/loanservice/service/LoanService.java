@@ -29,7 +29,7 @@ public class LoanService {
 
     @Transactional
     public LoanResponseDto getLoans() {
-        List<Loan> loans = loanRepository.findAll();
+        List<Loan> loans = loanRepository.findAllWithStarred(1L); //todo 추후 사용자 받으면 수정
         // TODO 사용자와 부동산에 의해서 대출 상품 필터링
         // TODO 우대사항 고려하여 정렬
         List<LoanCategoryDto> loanCategoryDtos = loansToLoanCategoryDtos(loans);
@@ -55,7 +55,10 @@ public class LoanService {
         Loan loan = loanRepository.findById(loanId)
                 .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "Loan"));
         //TODO 사용자 조건을 추가하여 우대사항 필터링
-        return loan.toLoanDetailResponseDto();
+        Loan loanWithStarred = loanRepository.findByLoanIdWithStarred(loanId, 1L) //todo 추후 사용자 받으면 수정
+                .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "Loan"));
+//        log.info("loanWithStarred : {}", loanWithStarred.size());
+        return loanWithStarred.toLoanDetailResponseDto();
     }
 
     private List<LoanCategoryDto> loansToLoanCategoryDtos(List<Loan> loans){
