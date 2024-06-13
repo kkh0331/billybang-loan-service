@@ -1,11 +1,8 @@
-package com.billybang.loanservice.model.entity.loan;
+package com.billybang.loanservice.model.entity.star;
 
-import com.billybang.loanservice.model.type.PreferredItemType;
+import com.billybang.loanservice.model.entity.loan.Loan;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
@@ -27,5 +24,10 @@ public class StarredLoan {
     private Loan loan;
 
     private Long userId;
+
+    public StarredLoan(Loan loan, Long userId){
+        this.loan = loan;
+        this.userId = userId;
+    }
 
 }

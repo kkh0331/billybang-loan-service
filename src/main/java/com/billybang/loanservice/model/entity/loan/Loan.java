@@ -1,9 +1,10 @@
 package com.billybang.loanservice.model.entity.loan;
 
 import com.billybang.loanservice.model.dto.loan.LoanDto;
-import com.billybang.loanservice.model.dto.response.LoanDetailResponseDto;
-import com.billybang.loanservice.model.dto.response.LoanSimpleResponseDto;
+import com.billybang.loanservice.model.dto.response.LoanDetailResDto;
+import com.billybang.loanservice.model.dto.response.LoanSimpleResDto;
 import com.billybang.loanservice.model.entity.provider.Provider;
+import com.billybang.loanservice.model.entity.star.StarredLoan;
 import com.billybang.loanservice.model.type.LoanType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -77,8 +78,8 @@ public class Loan {
                 .build();
     }
 
-    public LoanSimpleResponseDto toLoanSimpleResponseDto(){
-        return LoanSimpleResponseDto.builder()
+    public LoanSimpleResDto toLoanSimpleResDto(){
+        return LoanSimpleResDto.builder()
                 .providerName(provider.getProviderName())
                 .providerImgUrl(provider.getImgUrl())
                 .productName(productName)
@@ -89,7 +90,7 @@ public class Loan {
                 .build();
     }
 
-    public LoanDetailResponseDto toLoanDetailResponseDto(){
+    public LoanDetailResDto toLoanDetailResDto(){
         Integer maxLoanLimit = loanLimit;
         for(LoanPreferredItem loanPreferredItem: loanPreferredItems){
             if(loanPreferredItem.getLoanLimit() > maxLoanLimit)
@@ -98,7 +99,7 @@ public class Loan {
         List<String> loanPreferredItemNames = loanPreferredItems.stream()
                 .map(loanPreferredItem -> loanPreferredItem.getItemType().getName()).toList();
         Long starredLoanId = starredLoans.isEmpty() ? null : starredLoans.get(0).getId();
-        return LoanDetailResponseDto.builder()
+        return LoanDetailResDto.builder()
                 .providerId(provider.getId())
                 .providerName(provider.getProviderName())
                 .providerImgUrl(provider.getImgUrl())
