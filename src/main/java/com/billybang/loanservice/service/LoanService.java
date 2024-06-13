@@ -1,7 +1,10 @@
 package com.billybang.loanservice.service;
 
+import com.billybang.loanservice.exception.common.BError;
+import com.billybang.loanservice.exception.common.CommonException;
 import com.billybang.loanservice.model.dto.loan.LoanDto;
 import com.billybang.loanservice.model.dto.loan.LoanCategoryDto;
+import com.billybang.loanservice.model.dto.response.LoanSimpleResponseDto;
 import com.billybang.loanservice.model.dto.response.LoanResponseDto;
 import com.billybang.loanservice.model.entity.loan.Loan;
 import com.billybang.loanservice.model.type.LoanType;
@@ -33,6 +36,16 @@ public class LoanService {
                 .sumCount(loans.size()) // TODO 필터링 후 size로 변경
                 .loanCategories(loanCategoryDtos)
                 .build();
+    }
+
+    @Transactional
+    public LoanSimpleResponseDto getLoanSimple() {
+        LoanType loanType = LoanType.JEONSE; //TODO 부동산 id 받으면 거기에서 전세인지 매매인지 추출
+        List<Loan> loans = loanRepository.findAllByLoanType(loanType);
+        if(loans.isEmpty()) throw new CommonException(BError.NOT_EXIST, "LoansByLoanType");
+        //TODO 부동산과 사용자에 맞춰서 필터링한 후, 랜덤으로 하나 추출 -> 일단은 첫 번째 것을 가져온다.
+        Loan filteredRandomLoan = loans.get(0);
+        return filteredRandomLoan.toLoanSimpleResponseDto();
     }
 
     private List<LoanCategoryDto> loansToLoanCategoryDtos(List<Loan> loans){

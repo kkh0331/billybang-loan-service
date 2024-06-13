@@ -1,6 +1,7 @@
 package com.billybang.loanservice.model.entity.loan;
 
 import com.billybang.loanservice.model.dto.loan.LoanDto;
+import com.billybang.loanservice.model.dto.response.LoanSimpleResponseDto;
 import com.billybang.loanservice.model.entity.provider.Provider;
 import com.billybang.loanservice.model.type.GuaranteeAgencyType;
 import com.billybang.loanservice.model.type.LoanType;
@@ -69,6 +70,18 @@ public class Loan {
                 .minInterestRate(minInterestRate)
                 .maxInterestRate(maxInterestRate)
                 .starredLoanId(null)
+                .build();
+    }
+
+    public LoanSimpleResponseDto toLoanSimpleResponseDto(){
+        return LoanSimpleResponseDto.builder()
+                .providerName(provider.getProviderName())
+                .providerImgUrl(provider.getImgUrl())
+                .productName(productName)
+                .loanLimit(loanLimit)
+                .ltv(ltv)
+                .minInterestRate(minInterestRate)
+                .maxInterestRate(maxInterestRate)
                 .build();
     }
 
