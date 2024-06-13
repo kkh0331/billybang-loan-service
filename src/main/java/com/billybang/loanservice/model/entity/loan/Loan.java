@@ -1,15 +1,17 @@
 package com.billybang.loanservice.model.entity.loan;
 
 import com.billybang.loanservice.model.dto.loan.LoanDto;
+import com.billybang.loanservice.model.dto.response.LoanDetailResponseDto;
 import com.billybang.loanservice.model.dto.response.LoanSimpleResponseDto;
 import com.billybang.loanservice.model.entity.provider.Provider;
-import com.billybang.loanservice.model.type.GuaranteeAgencyType;
 import com.billybang.loanservice.model.type.LoanType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+
+import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
@@ -40,8 +42,7 @@ public class Loan {
 
     private Integer loanLimit;
 
-    @Enumerated(EnumType.STRING)
-    private GuaranteeAgencyType guaranteeAgency;
+    private String guaranteeAgency;
 
     private Integer minTerm;
 
@@ -53,8 +54,8 @@ public class Loan {
 
     private String interestRateType;
 
-//    @OneToMany(mappedBy = "loan")
-//    private List<LoanPreferredItem> loanPreferredItems;
+    @OneToMany(mappedBy = "loan")
+    private List<LoanPreferredItem> loanPreferredItems;
 
     // TODO 즐겨찾기 변수 추가 + toLoanDto도 수정
 
@@ -82,6 +83,34 @@ public class Loan {
                 .ltv(ltv)
                 .minInterestRate(minInterestRate)
                 .maxInterestRate(maxInterestRate)
+                .build();
+    }
+
+    public LoanDetailResponseDto toLoanDetailResponseDto(){
+        Integer maxLoanLimit = loanLimit;
+        for(LoanPreferredItem loanPreferredItem: loanPreferredItems){
+            if(loanPreferredItem.getLoanLimit() > maxLoanLimit)
+                maxLoanLimit = loanPreferredItem.getLoanLimit();
+        }
+        List<String> loanPreferredItemNames = loanPreferredItems.stream()
+                .map(loanPreferredItem -> loanPreferredItem.getItemType().getName()).toList();
+        return LoanDetailResponseDto.builder()
+                .providerId(provider.getId())
+                .providerName(provider.getProviderName())
+                .providerImgUrl(provider.getImgUrl())
+                .productName(productName)
+                .productDesc(productDesc)
+                .guaranteeAgencyName(guaranteeAgency)
+                .loanType(loanType.getName())
+                .loanLimit(maxLoanLimit)
+                .ltv(ltv)
+                .minTerm(minTerm)
+                .maxTerm(maxTerm)
+                .minInterestRate(minInterestRate)
+                .maxInterestRate(maxInterestRate)
+                .interestRateType(interestRateType)
+                .preferentialItems(loanPreferredItemNames)
+                .starredLoanId(null)
                 .build();
     }
 

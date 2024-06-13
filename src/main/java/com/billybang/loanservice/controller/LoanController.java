@@ -1,6 +1,7 @@
 package com.billybang.loanservice.controller;
 
 import com.billybang.loanservice.api.LoanApi;
+import com.billybang.loanservice.model.dto.response.LoanDetailResponseDto;
 import com.billybang.loanservice.model.dto.response.LoanResponseDto;
 import com.billybang.loanservice.model.dto.response.LoanSimpleResponseDto;
 import com.billybang.loanservice.service.LoanService;
@@ -27,6 +28,12 @@ public class LoanController implements LoanApi {
         // 부동산과 사용자 정보를 받아온다...
         LoanSimpleResponseDto loanSimpleResponseDto = loanService.getLoanSimple();
         return ResponseEntity.ok(loanSimpleResponseDto);
+    }
+
+    @Override
+    public ResponseEntity getLoanDetail(Long loanId) {
+        LoanDetailResponseDto loanDetailResponseDto = loanService.getLoanDetail(loanId);
+        return ResponseEntity.ok(loanDetailResponseDto);
     }
 
 }

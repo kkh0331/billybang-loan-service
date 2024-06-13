@@ -4,11 +4,13 @@ import com.billybang.loanservice.exception.common.BError;
 import com.billybang.loanservice.exception.common.CommonException;
 import com.billybang.loanservice.model.dto.loan.LoanDto;
 import com.billybang.loanservice.model.dto.loan.LoanCategoryDto;
+import com.billybang.loanservice.model.dto.response.LoanDetailResponseDto;
 import com.billybang.loanservice.model.dto.response.LoanSimpleResponseDto;
 import com.billybang.loanservice.model.dto.response.LoanResponseDto;
 import com.billybang.loanservice.model.entity.loan.Loan;
 import com.billybang.loanservice.model.type.LoanType;
 import com.billybang.loanservice.repository.loan.LoanRepository;
+import jakarta.persistence.OneToMany;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -46,6 +48,14 @@ public class LoanService {
         //TODO 부동산과 사용자에 맞춰서 필터링한 후, 랜덤으로 하나 추출 -> 일단은 첫 번째 것을 가져온다.
         Loan filteredRandomLoan = loans.get(0);
         return filteredRandomLoan.toLoanSimpleResponseDto();
+    }
+
+    @Transactional
+    public LoanDetailResponseDto getLoanDetail(Long loanId) {
+        Loan loan = loanRepository.findById(loanId)
+                .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "Loan"));
+        //TODO 사용자 조건을 추가하여 우대사항 필터링
+        return loan.toLoanDetailResponseDto();
     }
 
     private List<LoanCategoryDto> loansToLoanCategoryDtos(List<Loan> loans){

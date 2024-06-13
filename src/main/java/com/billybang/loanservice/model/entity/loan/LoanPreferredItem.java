@@ -1,5 +1,6 @@
 package com.billybang.loanservice.model.entity.loan;
 
+import com.billybang.loanservice.model.type.PreferredItemType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -18,10 +19,13 @@ public class LoanPreferredItem {
     @Column(name = "loan_preferred_item_id")
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "load_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "loan_id")
     private Loan loan;
 
+    @Enumerated(EnumType.STRING)
+    private PreferredItemType itemType;
 
+    private Integer loanLimit;
 
 }
