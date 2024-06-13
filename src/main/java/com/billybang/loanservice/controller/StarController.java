@@ -3,7 +3,10 @@ package com.billybang.loanservice.controller;
 import com.billybang.loanservice.api.StarApi;
 import com.billybang.loanservice.exception.common.CommonException;
 import com.billybang.loanservice.exception.common.IError;
+import com.billybang.loanservice.model.Mapper.LoanCategoryMapper;
+import com.billybang.loanservice.model.dto.loan.LoanCategoryDto;
 import com.billybang.loanservice.model.dto.request.SaveStarredLoanReqDto;
+import com.billybang.loanservice.model.dto.response.LoanSimpleResDto;
 import com.billybang.loanservice.model.entity.loan.Loan;
 import com.billybang.loanservice.model.entity.star.StarredLoan;
 import com.billybang.loanservice.service.LoanService;
@@ -30,5 +33,16 @@ public class StarController implements StarApi {
         Loan loan = loanService.getLoanByLoanId(loanId);
         starService.saveStarredLoan(loan, userId);
         return null;
+    }
+
+    @Override
+    public ResponseEntity getStarredLoans() {
+        return ResponseEntity.ok(starService.getLoansByUserId(userId));
+    }
+
+    @Override
+    public ResponseEntity getStarredLoansSimple(Integer count) {
+        List<LoanSimpleResDto> loanSimpleResDtos = starService.getLoansSimpleByUserId(userId);
+        return ResponseEntity.ok(loanSimpleResDtos.stream().limit(count).toList());
     }
 }

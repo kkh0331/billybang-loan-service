@@ -6,10 +6,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Loan Star API", description = "대출 상품 즐겨찾기 API")
 @RequestMapping("/loans/stars")
@@ -23,4 +20,19 @@ public interface StarApi {
     @PostMapping("")
     ResponseEntity saveStarredLoan(@RequestBody SaveStarredLoanReqDto saveStarredLoanReqDto);
 
+    @Operation(summary = "대출 상품 즐겨찾기 조회", description = "즐겨찾기한 대출 상품들을 조회한다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Bad Request")
+    })
+    @GetMapping("")
+    ResponseEntity getStarredLoans();
+
+    @Operation(summary = "대출 상품 즐겨찾기 간단히 조회", description = "즐겨찾기한 대출 상품들을 간단히 조회한다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Bad Request")
+    })
+    @GetMapping("/simple")
+    ResponseEntity getStarredLoansSimple(@RequestParam("count") Integer count);
 }

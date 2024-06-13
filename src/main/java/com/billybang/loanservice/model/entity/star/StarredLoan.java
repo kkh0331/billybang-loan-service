@@ -1,5 +1,6 @@
 package com.billybang.loanservice.model.entity.star;
 
+import com.billybang.loanservice.model.dto.loan.LoanCategoryDto;
 import com.billybang.loanservice.model.entity.loan.Loan;
 import jakarta.persistence.*;
 import lombok.*;
