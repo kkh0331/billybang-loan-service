@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 @Builder
-public class LoanResponseDto {
+public class LoanResDto {
 
     private String buildingName;
 

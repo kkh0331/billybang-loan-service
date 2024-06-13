@@ -7,7 +7,7 @@ import java.util.List;
 
 @Getter
 @Builder
-public class LoanDetailResponseDto {
+public class LoanDetailResDto {
 
     private Integer providerId;
 

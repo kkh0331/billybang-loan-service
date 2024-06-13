@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class LoanSimpleResponseDto {
+public class LoanSimpleResDto {
 
     private String providerName;
 

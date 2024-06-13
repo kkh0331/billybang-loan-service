@@ -10,7 +10,7 @@ import java.util.List;
 
 @Getter
 @Builder
-public class ProviderInfoResponseDto {
+public class ProviderInfoResDto {
 
     private ProviderOverviewDto providerOverview;
 
