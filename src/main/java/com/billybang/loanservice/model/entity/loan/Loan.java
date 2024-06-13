@@ -4,6 +4,7 @@ import com.billybang.loanservice.model.dto.loan.LoanDto;
 import com.billybang.loanservice.model.dto.response.LoanDetailResDto;
 import com.billybang.loanservice.model.dto.response.LoanSimpleResDto;
 import com.billybang.loanservice.model.entity.provider.Provider;
+import com.billybang.loanservice.model.entity.star.StarredLoan;
 import com.billybang.loanservice.model.type.LoanType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

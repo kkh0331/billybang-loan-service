@@ -59,6 +59,12 @@ public class LoanService {
         return loanWithStarred.toLoanDetailResDto();
     }
 
+    @Transactional
+    public Loan getLoanByLoanId(Long loanId){
+        return loanRepository.findById(loanId)
+                .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "Loan"));
+    }
+
     private List<LoanCategoryDto> loansToLoanCategoryDtos(List<Loan> loans){
         Map<LoanType, List<Loan>> categorizedLoans = loans.stream().collect(Collectors.groupingBy(Loan::getLoanType));
         return categorizedLoans.entrySet().stream()
