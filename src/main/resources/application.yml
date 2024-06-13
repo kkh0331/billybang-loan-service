@@ -1,0 +1,23 @@
+server:
+  port: 3002
+
+spring:
+  application:
+    name: loan-service
+  profiles:
+    active: local
+    include:
+      - datasource
+      - cloud
+      - logging
+  config:
+    import: [optional:configserver:http://3.39.52.110:8888]
+  cloud:
+    config:
+      name: loan-service
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh, health, beans, busrefresh
