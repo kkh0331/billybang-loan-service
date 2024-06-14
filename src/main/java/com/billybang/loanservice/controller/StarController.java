@@ -45,4 +45,12 @@ public class StarController implements StarApi {
         List<LoanSimpleResDto> loanSimpleResDtos = starService.getLoansSimpleByUserId(userId);
         return ResponseEntity.ok(loanSimpleResDtos.stream().limit(count).toList());
     }
+
+    @Override
+    public ResponseEntity deleteStarredLoan(Long starredLoanId) {
+        starService.deleteStaaredLoan(starredLoanId);
+        return null;
+    }
+
+
 }

@@ -47,4 +47,9 @@ public class StarService {
         List<Loan> loans = starredLoans.stream().map(StarredLoan::getLoan).toList();
         return loans.stream().map(Loan::toLoanSimpleResDto).toList();
     }
+
+    @Transactional
+    public void deleteStaaredLoan(Long starredLoanId) {
+        starredLoanRepository.deleteById(starredLoanId);
+    }
 }
