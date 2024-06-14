@@ -35,4 +35,13 @@ public interface StarApi {
     })
     @GetMapping("/simple")
     ResponseEntity getStarredLoansSimple(@RequestParam("count") Integer count);
+
+    @Operation(summary = "대출 상품 즐겨찾기 삭제", description = "즐겨찾기한 대출 상품을 삭제한다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Bad Request")
+    })
+    @DeleteMapping("/{starredLoanId}")
+    ResponseEntity deleteStarredLoan(@PathVariable("starredLoanId") Long starredLoanId);
+
 }
