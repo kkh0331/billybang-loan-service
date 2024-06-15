@@ -1,5 +1,7 @@
 package com.billybang.loanservice.controller;
 
+import com.billybang.loanservice.api.ApiResult;
+import com.billybang.loanservice.api.ApiUtils;
 import com.billybang.loanservice.api.StarApi;
 import com.billybang.loanservice.exception.common.CommonException;
 import com.billybang.loanservice.exception.common.IError;
@@ -28,29 +30,29 @@ public class StarController implements StarApi {
     private final LoanService loanService;
 
     @Override
-    public ResponseEntity saveStarredLoan(SaveStarredLoanReqDto saveStarredLoanReqDto) {
+    public ResponseEntity<?> saveStarredLoan(SaveStarredLoanReqDto saveStarredLoanReqDto) {
         Long loanId = saveStarredLoanReqDto.getLoanId();
         Loan loan = loanService.getLoanByLoanId(loanId);
         starService.saveStarredLoan(loan, userId);
-        return null;
+        return ResponseEntity.created(null).body(ApiUtils.success(null));
     }
 
     @Override
-    public ResponseEntity getStarredLoans() {
-        return ResponseEntity.ok(starService.getLoansByUserId(userId));
+    public ResponseEntity<ApiResult<List<LoanCategoryDto>>> getStarredLoans() {
+        List<LoanCategoryDto> loans = starService.getLoansByUserId(userId);
+        return ResponseEntity.ok(ApiUtils.success(loans));
     }
 
     @Override
-    public ResponseEntity getStarredLoansSimple(Integer count) {
+    public ResponseEntity<ApiResult<List<LoanSimpleResDto>>> getStarredLoansSimple(Integer count) {
         List<LoanSimpleResDto> loanSimpleResDtos = starService.getLoansSimpleByUserId(userId);
-        return ResponseEntity.ok(loanSimpleResDtos.stream().limit(count).toList());
+        return ResponseEntity.ok(ApiUtils.success(loanSimpleResDtos.stream().limit(count).toList()));
     }
 
     @Override
-    public ResponseEntity deleteStarredLoan(Long starredLoanId) {
+    public ResponseEntity<?> deleteStarredLoan(Long starredLoanId) {
         starService.deleteStaaredLoan(starredLoanId);
-        return null;
+        return ResponseEntity.noContent().build();
     }
-
 
 }

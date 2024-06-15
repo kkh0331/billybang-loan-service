@@ -1,5 +1,7 @@
 package com.billybang.loanservice.controller;
 
+import com.billybang.loanservice.api.ApiResult;
+import com.billybang.loanservice.api.ApiUtils;
 import com.billybang.loanservice.api.LoanApi;
 import com.billybang.loanservice.model.dto.response.LoanDetailResDto;
 import com.billybang.loanservice.model.dto.response.LoanResDto;
@@ -16,24 +18,24 @@ public class LoanController implements LoanApi {
     private final LoanService loanService;
 
     @Override
-    public ResponseEntity getLoans() {
+    public ResponseEntity<ApiResult<LoanResDto>> getLoans() {
         // TODO 부동산과 사용자 정보를 받아온다...
         // TODO 금융상품 필터링 기능을 위한 파라미터 받아온다.
         LoanResDto loans = loanService.getLoans();
-        return ResponseEntity.ok(loans);
+        return ResponseEntity.ok(ApiUtils.success(loans));
     }
 
     @Override
-    public ResponseEntity getLoanSimple() {
+    public ResponseEntity<ApiResult<LoanSimpleResDto>> getLoanSimple() {
         // 부동산과 사용자 정보를 받아온다...
         LoanSimpleResDto loanSimpleResDto = loanService.getLoanSimple();
-        return ResponseEntity.ok(loanSimpleResDto);
+        return ResponseEntity.ok(ApiUtils.success(loanSimpleResDto));
     }
 
     @Override
-    public ResponseEntity getLoanDetail(Long loanId) {
+    public ResponseEntity<ApiResult<LoanDetailResDto>> getLoanDetail(Long loanId) {
         LoanDetailResDto loanDetailResDto = loanService.getLoanDetail(loanId);
-        return ResponseEntity.ok(loanDetailResDto);
+        return ResponseEntity.ok(ApiUtils.success(loanDetailResDto));
     }
 
 }
