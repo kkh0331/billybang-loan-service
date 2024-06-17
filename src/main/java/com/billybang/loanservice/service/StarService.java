@@ -1,10 +1,12 @@
 package com.billybang.loanservice.service;
 
+import com.billybang.loanservice.client.UserServiceClient;
 import com.billybang.loanservice.exception.common.BError;
 import com.billybang.loanservice.exception.common.CommonException;
 import com.billybang.loanservice.model.Mapper.LoanCategoryMapper;
 import com.billybang.loanservice.model.dto.loan.LoanCategoryDto;
 import com.billybang.loanservice.model.dto.response.LoanSimpleResDto;
+import com.billybang.loanservice.model.dto.response.UserResponseDto;
 import com.billybang.loanservice.model.entity.loan.Loan;
 import com.billybang.loanservice.model.entity.star.StarredLoan;
 import com.billybang.loanservice.repository.star.StarredLoanRepository;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 public class StarService {
 
     private final StarredLoanRepository starredLoanRepository;
+    private final UserServiceClient userServiceClient;
 
     @Transactional
     public void saveStarredLoan(Loan loan, Long userId) {
@@ -49,7 +52,11 @@ public class StarService {
     }
 
     @Transactional
-    public void deleteStaaredLoan(Long starredLoanId) {
+    public void deleteStarredLoan(Long starredLoanId) {
         starredLoanRepository.deleteById(starredLoanId);
+    }
+
+    public UserResponseDto getUserInfo() {
+        return userServiceClient.getUserInfo().getResponse();
     }
 }

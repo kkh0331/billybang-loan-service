@@ -67,7 +67,7 @@ public class LoanService {
     }
 
     public UserResponseDto getUserInfo() {
-        return userServiceClient.getUserInfo();
+        return userServiceClient.getUserInfo().getResponse();
     }
 
 }

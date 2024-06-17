@@ -7,7 +7,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Nullable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,7 +40,7 @@ public interface StarApi {
             @ApiResponse(responseCode = "400", description = "Bad Request")
     })
     @GetMapping("/simple")
-    ResponseEntity<ApiResult<List<LoanSimpleResDto>>> getStarredLoansSimple(@RequestParam("count") Integer count);
+    ResponseEntity<ApiResult<List<LoanSimpleResDto>>> getStarredLoansSimple(@Validated @RequestParam("count") @Nullable Integer count);
 
     @Operation(summary = "대출 상품 즐겨찾기 삭제", description = "즐겨찾기한 대출 상품을 삭제한다.")
     @ApiResponses(value = {

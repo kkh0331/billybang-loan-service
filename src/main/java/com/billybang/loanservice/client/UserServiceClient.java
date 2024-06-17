@@ -1,5 +1,6 @@
 package com.billybang.loanservice.client;
 
+import com.billybang.loanservice.api.ApiResult;
 import com.billybang.loanservice.model.dto.response.UserResponseDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,5 +9,5 @@ import org.springframework.web.bind.annotation.GetMapping;
 public interface UserServiceClient {
 
     @GetMapping("/user-info")
-    UserResponseDto getUserInfo();
+    ApiResult<UserResponseDto> getUserInfo();
 }
