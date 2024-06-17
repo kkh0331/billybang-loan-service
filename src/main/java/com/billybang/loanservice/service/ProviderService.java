@@ -6,13 +6,17 @@ import com.billybang.loanservice.model.dto.provider.FinIndicatorDto;
 import com.billybang.loanservice.model.dto.provider.FinScoreIndicatorDto;
 import com.billybang.loanservice.model.dto.provider.FinStatementDto;
 import com.billybang.loanservice.model.dto.provider.ProviderOverviewDto;
+import com.billybang.loanservice.model.entity.provider.FinIndicator;
 import com.billybang.loanservice.model.entity.provider.FinStatement;
+import com.billybang.loanservice.model.entity.provider.Provider;
 import com.billybang.loanservice.model.type.IndicatorType;
 import com.billybang.loanservice.model.type.IndicatorGradeType;
 import com.billybang.loanservice.repository.provider.FinIndicatorRepository;
 import com.billybang.loanservice.repository.provider.FinStatementRepository;
+import com.billybang.loanservice.repository.provider.ProviderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +24,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -29,12 +34,14 @@ public class ProviderService {
 
     private final FinStatementRepository finStatementRepository;
     private final FinIndicatorRepository finIndicatorRepository;
+    private final ProviderRepository providerRepository;
 
     @Transactional
     public ProviderOverviewDto getProviderOverview(Integer providerId) {
-        FinStatement recentStatement = finStatementRepository.findTop1ByProviderIdOrderByYearDesc(providerId)
+        Provider resultProvider = providerRepository.findById(providerId)
                 .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "Provider"));
-        return recentStatement.toProviderOverviewDto();
+        Optional<FinStatement> recentStatement = finStatementRepository.findTop1ByProviderIdOrderByYearDesc(providerId);
+        return resultProvider.toProviderOverviewDto(recentStatement);
     }
 
     @Transactional
@@ -45,8 +52,9 @@ public class ProviderService {
 
     @Transactional
     public List<FinIndicatorDto> getFinIndicators(Integer providerId){
-        short lastYear = (short) (LocalDate.now().getYear() - 1);
-        List<FinScoreIndicatorDto> scoreIndicators = finIndicatorRepository.findAllByYear(lastYear);
+        Optional<FinIndicator> finIndicator = finIndicatorRepository.findTop1ByProviderIdOrderByYearDesc(providerId);
+        if(finIndicator.isEmpty()) return new ArrayList<>();
+        List<FinScoreIndicatorDto> scoreIndicators = finIndicatorRepository.findAllByYear(finIndicator.get().getYear());
         List<FinIndicatorDto> finIndicators = new ArrayList<>();
         for(IndicatorType indicatorType : IndicatorType.values()){
             finIndicators.add(toFinIndicatorDto(scoreIndicators, indicatorType, providerId));
