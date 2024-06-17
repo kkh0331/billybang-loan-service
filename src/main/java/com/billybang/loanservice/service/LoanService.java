@@ -1,15 +1,15 @@
 package com.billybang.loanservice.service;
 
+import com.billybang.loanservice.client.UserServiceClient;
 import com.billybang.loanservice.exception.common.BError;
 import com.billybang.loanservice.exception.common.CommonException;
 import com.billybang.loanservice.model.Mapper.LoanCategoryMapper;
-import com.billybang.loanservice.model.dto.loan.LoanDto;
 import com.billybang.loanservice.model.dto.loan.LoanCategoryDto;
 import com.billybang.loanservice.model.dto.response.LoanDetailResDto;
-import com.billybang.loanservice.model.dto.response.LoanSimpleResDto;
 import com.billybang.loanservice.model.dto.response.LoanResDto;
+import com.billybang.loanservice.model.dto.response.LoanSimpleResDto;
+import com.billybang.loanservice.model.dto.response.UserResponseDto;
 import com.billybang.loanservice.model.entity.loan.Loan;
-import com.billybang.loanservice.model.entity.star.StarredLoan;
 import com.billybang.loanservice.model.type.LoanType;
 import com.billybang.loanservice.repository.loan.LoanRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -27,6 +25,7 @@ import java.util.stream.Collectors;
 public class LoanService {
 
     private final LoanRepository loanRepository;
+    private final UserServiceClient userServiceClient;
 
     @Transactional
     public LoanResDto getLoans() {
@@ -65,6 +64,10 @@ public class LoanService {
     public Loan getLoanByLoanId(Long loanId){
         return loanRepository.findById(loanId)
                 .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "Loan"));
+    }
+
+    public UserResponseDto getUserInfo() {
+        return userServiceClient.getUserInfo();
     }
 
 }
