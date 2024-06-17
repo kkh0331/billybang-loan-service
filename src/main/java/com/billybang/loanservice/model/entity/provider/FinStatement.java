@@ -40,23 +40,6 @@ public class FinStatement {
 
     private Long totalAssets;
 
-    public ProviderOverviewDto toProviderOverviewDto(){
-        return ProviderOverviewDto.builder()
-                .providerName(provider.getProviderName())
-                .imgUrl(provider.getImgUrl())
-                .representativeName(provider.getRepresentativeName())
-                .establishedAt(DateUtil.convertToKoreanDatePattern(provider.getEstablishedAt()))
-                .providerSize(provider.getProviderSize())
-                .providerType(provider.getProviderType())
-                .salesAmount(NumberUtil.convertToBillion(salesAmount))
-                .businessProfit(NumberUtil.convertToBillion(businessProfit))
-                .netProfit(NumberUtil.convertToBillion(netProfit))
-                .creditLevel(provider.getCreditLevel())
-                .employeeCount(NumberUtil.addCommas(provider.getEmployeeCount()))
-                .industryDetail(provider.getIndustryDetail())
-                .build();
-    }
-
     public FinStatementDto toFinStatementDto(){
         return FinStatementDto.builder()
                 .id(id)

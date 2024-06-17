@@ -9,6 +9,8 @@ public class ProviderOverviewDto {
 
     private String providerName;
 
+    private Integer financialTier;
+
     private String imgUrl;
 
     private String representativeName;
