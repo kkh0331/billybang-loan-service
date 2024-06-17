@@ -9,6 +9,7 @@ import com.billybang.loanservice.model.Mapper.LoanCategoryMapper;
 import com.billybang.loanservice.model.dto.loan.LoanCategoryDto;
 import com.billybang.loanservice.model.dto.request.SaveStarredLoanReqDto;
 import com.billybang.loanservice.model.dto.response.LoanSimpleResDto;
+import com.billybang.loanservice.model.dto.response.UserResponseDto;
 import com.billybang.loanservice.model.entity.loan.Loan;
 import com.billybang.loanservice.model.entity.star.StarredLoan;
 import com.billybang.loanservice.service.LoanService;
@@ -25,7 +26,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StarController implements StarApi {
 
-    private final Long userId = 1L; //todo 나중에 user와 연결될 때 수정
     private final StarService starService;
     private final LoanService loanService;
 
@@ -33,25 +33,34 @@ public class StarController implements StarApi {
     public ResponseEntity<?> saveStarredLoan(SaveStarredLoanReqDto saveStarredLoanReqDto) {
         Long loanId = saveStarredLoanReqDto.getLoanId();
         Loan loan = loanService.getLoanByLoanId(loanId);
-        starService.saveStarredLoan(loan, userId);
+        UserResponseDto userInfo = starService.getUserInfo();
+        log.info("saveStarredLoan userId : {}", userInfo.getUserId());
+        starService.saveStarredLoan(loan, userInfo.getUserId());
         return ResponseEntity.created(null).body(ApiUtils.success(null));
     }
 
     @Override
     public ResponseEntity<ApiResult<List<LoanCategoryDto>>> getStarredLoans() {
-        List<LoanCategoryDto> loans = starService.getLoansByUserId(userId);
+        UserResponseDto userInfo = starService.getUserInfo();
+        log.info("getStarredLoans userId : {}", userInfo.getUserId());
+        List<LoanCategoryDto> loans = starService.getLoansByUserId(userInfo.getUserId());
         return ResponseEntity.ok(ApiUtils.success(loans));
     }
 
     @Override
     public ResponseEntity<ApiResult<List<LoanSimpleResDto>>> getStarredLoansSimple(Integer count) {
-        List<LoanSimpleResDto> loanSimpleResDtos = starService.getLoansSimpleByUserId(userId);
+        UserResponseDto userInfo = starService.getUserInfo();
+        log.info("getStarredLoansSimple userId : {}", userInfo.getUserId());
+        List<LoanSimpleResDto> loanSimpleResDtos = starService.getLoansSimpleByUserId(userInfo.getUserId());
+        if(count == null){
+            return ResponseEntity.ok(ApiUtils.success(loanSimpleResDtos));
+        }
         return ResponseEntity.ok(ApiUtils.success(loanSimpleResDtos.stream().limit(count).toList()));
     }
 
     @Override
     public ResponseEntity<?> deleteStarredLoan(Long starredLoanId) {
-        starService.deleteStaaredLoan(starredLoanId);
+        starService.deleteStarredLoan(starredLoanId);
         return ResponseEntity.noContent().build();
     }
 
