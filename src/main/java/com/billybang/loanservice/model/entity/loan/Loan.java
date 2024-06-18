@@ -3,16 +3,22 @@ package com.billybang.loanservice.model.entity.loan;
 import com.billybang.loanservice.model.dto.loan.LoanDto;
 import com.billybang.loanservice.model.dto.response.LoanDetailResDto;
 import com.billybang.loanservice.model.dto.response.LoanSimpleResDto;
+import com.billybang.loanservice.model.dto.response.UserResponseDto;
 import com.billybang.loanservice.model.entity.provider.Provider;
 import com.billybang.loanservice.model.entity.star.StarredLoan;
+import com.billybang.loanservice.model.type.CompanySize;
 import com.billybang.loanservice.model.type.InterestRateType;
 import com.billybang.loanservice.model.type.LoanType;
+import com.billybang.loanservice.model.type.PreferredItemType;
+import com.billybang.loanservice.utils.DateUtil;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -20,6 +26,7 @@ import java.util.List;
 @Table(name = "loans")
 @Getter
 @ToString
+@Slf4j
 public class Loan {
 
     @Id
@@ -67,7 +74,7 @@ public class Loan {
     @OneToMany(mappedBy = "loan")
     private List<StarredLoan> starredLoans;
 
-    public LoanDto toLoanDto(){
+    public LoanDto toLoanDto(Long userId){
         Long starredLoanId = starredLoans.isEmpty() ? null : starredLoans.get(0).getId();
         return LoanDto.builder()
                 .loanId(id)
@@ -79,7 +86,7 @@ public class Loan {
                 .ltv(ltv)
                 .minInterestRate(minInterestRate)
                 .maxInterestRate(maxInterestRate)
-                .starredLoanId(starredLoanId)
+                .isStarred(isStarred(userId))
                 .build();
     }
 
@@ -95,14 +102,22 @@ public class Loan {
                 .build();
     }
 
-    public LoanDetailResDto toLoanDetailResDto(){
+    // todo 추후 리팩토링
+    public LoanDetailResDto toLoanDetailResDto(UserResponseDto userInfo){
+        log.info("userInfo: {}", userInfo);
         Integer maxLoanLimit = loanLimit;
-        for(LoanPreferredItem loanPreferredItem: loanPreferredItems){
-            if(loanPreferredItem.getLoanLimit() > maxLoanLimit)
-                maxLoanLimit = loanPreferredItem.getLoanLimit();
+        List<String> loanPreferredItemNames = new ArrayList<>();
+
+        for(LoanPreferredItem loanPreferredItem : loanPreferredItems) {
+            if(isLoanPreferredItemByUserInfo(loanPreferredItem, userInfo)) {
+                loanPreferredItemNames.add(loanPreferredItem.getItemType().getName());
+                Integer itemLoanLimit = loanPreferredItem.getLoanLimit();
+                if(itemLoanLimit != null && itemLoanLimit > maxLoanLimit) {
+                    maxLoanLimit = loanPreferredItem.getLoanLimit();
+                }
+            }
         }
-        List<String> loanPreferredItemNames = loanPreferredItems.stream()
-                .map(loanPreferredItem -> loanPreferredItem.getItemType().getName()).toList();
+
         Long starredLoanId = starredLoans.isEmpty() ? null : starredLoans.get(0).getId();
         return LoanDetailResDto.builder()
                 .providerId(provider.getId())
@@ -120,8 +135,24 @@ public class Loan {
                 .maxInterestRate(maxInterestRate)
                 .interestRateType(interestRateType.getName())
                 .preferentialItems(loanPreferredItemNames)
-                .starredLoanId(starredLoanId)
+                .isStarred(isStarred(userInfo.getUserId()))
                 .build();
+    }
+
+    //todo 나중에 따로 분리
+    private boolean isLoanPreferredItemByUserInfo(LoanPreferredItem loanPreferredItem, UserResponseDto userInfo){
+        int age = DateUtil.calcAge(userInfo.getBirthDate());
+        return switch (loanPreferredItem.getItemType()){
+            case NEWLY_MARRIED -> userInfo.getUserInfo().getIsNewlyMarried();
+            case MULTIPLE_CHILDREN -> userInfo.getUserInfo().getChildrenCount() >= 2;
+            case YOUTH -> 19 <= age && age <= 34;
+            case MEDIUM_SIZED -> userInfo.getUserInfo().getCompanySize() == CompanySize.INTERMEDIATE;
+        };
+    }
+
+    private boolean isStarred(Long userId){
+        return starredLoans.stream()
+                .map(StarredLoan::getUserId).toList().contains(userId);
     }
 
 }

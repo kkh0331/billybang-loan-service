@@ -47,7 +47,7 @@ public interface StarApi {
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "Bad Request")
     })
-    @DeleteMapping("/{starredLoanId}")
-    ResponseEntity<?> deleteStarredLoan(@PathVariable("starredLoanId") Long starredLoanId);
+    @DeleteMapping("")
+    ResponseEntity<?> deleteStarredLoan(@RequestParam("loanId") Long loanId);
 
 }

@@ -3,7 +3,7 @@ package com.billybang.loanservice.service;
 import com.billybang.loanservice.client.UserServiceClient;
 import com.billybang.loanservice.exception.common.BError;
 import com.billybang.loanservice.exception.common.CommonException;
-import com.billybang.loanservice.model.Mapper.LoanCategoryMapper;
+import com.billybang.loanservice.model.mapper.LoanCategoryMapper;
 import com.billybang.loanservice.model.dto.loan.LoanCategoryDto;
 import com.billybang.loanservice.model.dto.response.LoanDetailResDto;
 import com.billybang.loanservice.model.dto.response.LoanResDto;
@@ -28,11 +28,12 @@ public class LoanService {
     private final UserServiceClient userServiceClient;
 
     @Transactional
-    public LoanResDto getLoans() {
-        List<Loan> loans = loanRepository.findAllWithStarred(1L); //todo 추후 사용자 받으면 수정
+    public LoanResDto getLoans(UserResponseDto userInfo) {
+        List<Loan> loans = loanRepository.findAll(); //todo 추후 사용자 받으면 수정
         // TODO 사용자와 부동산에 의해서 대출 상품 필터링
         // TODO 우대사항 고려하여 정렬
-        List<LoanCategoryDto> loanCategoryDtos = LoanCategoryMapper.loansToLoanCategoryDtos(loans);
+        log.info("loans: {}", loans);
+        List<LoanCategoryDto> loanCategoryDtos = LoanCategoryMapper.loansToLoanCategoryDtos(loans, userInfo.getUserId());
         return LoanResDto.builder()
                 .buildingName(null) // TODO building 이름 추가
                 .sumCount(loans.size()) // TODO 필터링 후 size로 변경
@@ -51,13 +52,12 @@ public class LoanService {
     }
 
     @Transactional
-    public LoanDetailResDto getLoanDetail(Long loanId) {
-        Loan loan = loanRepository.findById(loanId)
+    public LoanDetailResDto getLoanDetail(Long loanId, UserResponseDto userInfo) {
+        loanRepository.findById(loanId)
+            .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "Loan"));
+        Loan loanWithStarred = loanRepository.findById(loanId)
                 .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "Loan"));
-        //TODO 사용자 조건을 추가하여 우대사항 필터링
-        Loan loanWithStarred = loanRepository.findByLoanIdWithStarred(loanId, 1L) //todo 추후 사용자 받으면 수정
-                .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "Loan"));
-        return loanWithStarred.toLoanDetailResDto();
+        return loanWithStarred.toLoanDetailResDto(userInfo);
     }
 
     @Transactional

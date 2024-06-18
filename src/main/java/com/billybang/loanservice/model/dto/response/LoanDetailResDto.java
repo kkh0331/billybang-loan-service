@@ -39,6 +39,6 @@ public class LoanDetailResDto {
 
     private List<String> preferentialItems;
 
-    private Long starredLoanId;
+    private boolean isStarred;
 
 }

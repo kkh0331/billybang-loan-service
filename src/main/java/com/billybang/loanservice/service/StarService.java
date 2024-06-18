@@ -3,7 +3,7 @@ package com.billybang.loanservice.service;
 import com.billybang.loanservice.client.UserServiceClient;
 import com.billybang.loanservice.exception.common.BError;
 import com.billybang.loanservice.exception.common.CommonException;
-import com.billybang.loanservice.model.Mapper.LoanCategoryMapper;
+import com.billybang.loanservice.model.mapper.LoanCategoryMapper;
 import com.billybang.loanservice.model.dto.loan.LoanCategoryDto;
 import com.billybang.loanservice.model.dto.response.LoanSimpleResDto;
 import com.billybang.loanservice.model.dto.response.UserResponseDto;
@@ -12,13 +12,11 @@ import com.billybang.loanservice.model.entity.star.StarredLoan;
 import com.billybang.loanservice.repository.star.StarredLoanRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -41,7 +39,7 @@ public class StarService {
     public List<LoanCategoryDto> getLoansByUserId(Long userId) {
         List<StarredLoan> starredLoans = starredLoanRepository.findAllByUserId(userId);
         List<Loan> loans = starredLoans.stream().map(StarredLoan::getLoan).toList();
-        return LoanCategoryMapper.loansToLoanCategoryDtos(loans);
+        return LoanCategoryMapper.loansToLoanCategoryDtos(loans, userId);
     }
 
     @Transactional
@@ -52,8 +50,8 @@ public class StarService {
     }
 
     @Transactional
-    public void deleteStarredLoan(Long starredLoanId) {
-        starredLoanRepository.deleteById(starredLoanId);
+    public void deleteStarredLoan(Long loanId, Long userId) {
+        starredLoanRepository.deleteByLoanIdAndUserId(loanId, userId);
     }
 
     public UserResponseDto getUserInfo() {

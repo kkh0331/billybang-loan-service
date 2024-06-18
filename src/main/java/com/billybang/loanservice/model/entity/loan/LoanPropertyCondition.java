@@ -6,7 +6,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.checkerframework.checker.units.qual.C;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity

@@ -1,4 +1,4 @@
-package com.billybang.loanservice.model.Mapper;
+package com.billybang.loanservice.model.mapper;
 
 import com.billybang.loanservice.model.dto.loan.LoanCategoryDto;
 import com.billybang.loanservice.model.dto.loan.LoanDto;
@@ -11,15 +11,15 @@ import java.util.stream.Collectors;
 
 public class LoanCategoryMapper {
 
-    public static List<LoanCategoryDto> loansToLoanCategoryDtos(List<Loan> loans){
+    public static List<LoanCategoryDto> loansToLoanCategoryDtos(List<Loan> loans, Long userId){
         Map<LoanType, List<Loan>> categorizedLoans = loans.stream().collect(Collectors.groupingBy(Loan::getLoanType));
         return categorizedLoans.entrySet().stream()
-                .map(entry -> loansToLoanCategoryDto(entry.getKey(), entry.getValue()))
+                .map(entry -> loansToLoanCategoryDto(entry.getKey(), entry.getValue(), userId))
                 .toList();
     }
 
-    private static LoanCategoryDto loansToLoanCategoryDto(LoanType loanType, List<Loan> loans){
-        List<LoanDto> loanDtos = loans.stream().map(Loan::toLoanDto).toList();
+    private static LoanCategoryDto loansToLoanCategoryDto(LoanType loanType, List<Loan> loans, Long userId){
+        List<LoanDto> loanDtos = loans.stream().map(loan -> loan.toLoanDto(userId)).toList();
         return LoanCategoryDto.builder()
                 .loanType(loanType.getName())
                 .loans(loanDtos)
