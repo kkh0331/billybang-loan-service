@@ -5,6 +5,7 @@ import com.billybang.loanservice.model.dto.response.LoanDetailResDto;
 import com.billybang.loanservice.model.dto.response.LoanSimpleResDto;
 import com.billybang.loanservice.model.entity.provider.Provider;
 import com.billybang.loanservice.model.entity.star.StarredLoan;
+import com.billybang.loanservice.model.type.InterestRateType;
 import com.billybang.loanservice.model.type.LoanType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -35,6 +36,7 @@ public class Loan {
 
     private String productName;
 
+    @Column(length = 512)
     private String originUrl;
 
     private Integer ltv;
@@ -53,7 +55,10 @@ public class Loan {
 
     private Float maxInterestRate;
 
-    private String interestRateType;
+    @Enumerated(EnumType.STRING)
+    private InterestRateType interestRateType;
+
+    private String billybangId; // 데이터 저장 후 삭제
 
     @OneToMany(mappedBy = "loan")
     private List<LoanPreferredItem> loanPreferredItems;
@@ -113,7 +118,7 @@ public class Loan {
                 .maxTerm(maxTerm)
                 .minInterestRate(minInterestRate)
                 .maxInterestRate(maxInterestRate)
-                .interestRateType(interestRateType)
+                .interestRateType(interestRateType.getName())
                 .preferentialItems(loanPreferredItemNames)
                 .starredLoanId(starredLoanId)
                 .build();
