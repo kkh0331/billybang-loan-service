@@ -3,10 +3,7 @@ package com.billybang.loanservice.controller;
 import com.billybang.loanservice.api.ApiResult;
 import com.billybang.loanservice.api.ApiUtils;
 import com.billybang.loanservice.api.LoanApi;
-import com.billybang.loanservice.model.dto.response.LoanDetailResDto;
-import com.billybang.loanservice.model.dto.response.LoanResDto;
-import com.billybang.loanservice.model.dto.response.LoanSimpleResDto;
-import com.billybang.loanservice.model.dto.response.UserResponseDto;
+import com.billybang.loanservice.model.dto.response.*;
 import com.billybang.loanservice.service.LoanService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,20 +19,17 @@ public class LoanController implements LoanApi {
 
     @Override
     public ResponseEntity<ApiResult<LoanResDto>> getLoans(Long propertyId) {
-        // TODO 부동산과 사용자 정보를 받아온다...
-        log.info("propertyId : {}", propertyId);
-        // TODO 금융상품 필터링 기능을 위한 파라미터 받아온다.
         UserResponseDto userInfo = loanService.getUserInfo();
-        LoanResDto loans = loanService.getLoans(userInfo);
+        PropertyResponseDto propertyInfo = loanService.getPropertyInfo(propertyId);
+        LoanResDto loans = loanService.getLoans(propertyInfo, userInfo);
         return ResponseEntity.ok(ApiUtils.success(loans));
     }
 
     @Override
     public ResponseEntity<ApiResult<LoanSimpleResDto>> getLoanSimple(Long propertyId) {
-        // 부동산과 사용자 정보를 받아온다...
-        log.info("propertyId : {}", propertyId);
-//        UserResponseDto userInfo = loanService.getUserInfo();
-        LoanSimpleResDto loanSimpleResDto = loanService.getLoanSimple();
+        UserResponseDto userInfo = loanService.getUserInfo();
+        PropertyResponseDto propertyInfo = loanService.getPropertyInfo(propertyId);
+        LoanSimpleResDto loanSimpleResDto = loanService.getLoanSimple(propertyInfo, userInfo);
         return ResponseEntity.ok(ApiUtils.success(loanSimpleResDto));
     }
 

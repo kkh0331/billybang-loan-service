@@ -2,6 +2,7 @@ package com.billybang.loanservice.model.entity.loan;
 
 import com.billybang.loanservice.model.type.TargetOccupationType;
 import com.billybang.loanservice.model.type.TargetType;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -22,6 +23,7 @@ public class LoanUserCondition {
 
     @ManyToOne
     @JoinColumn(name = "loan_id")
+    @JsonBackReference
     private Loan loan;
 
     @Enumerated(EnumType.STRING)

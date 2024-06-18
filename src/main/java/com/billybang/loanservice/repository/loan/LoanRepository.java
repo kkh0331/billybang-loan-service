@@ -12,5 +12,6 @@ import java.util.Optional;
 public interface LoanRepository extends JpaRepository<Loan, Long> {
 
     List<Loan> findAllByLoanType(LoanType loanType);
+    List<Loan> findAllByLoanTypeIn(List<LoanType> loanTypes);
 
 }
