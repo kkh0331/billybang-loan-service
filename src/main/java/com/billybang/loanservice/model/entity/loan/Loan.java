@@ -3,15 +3,24 @@ package com.billybang.loanservice.model.entity.loan;
 import com.billybang.loanservice.model.dto.loan.LoanDto;
 import com.billybang.loanservice.model.dto.response.LoanDetailResDto;
 import com.billybang.loanservice.model.dto.response.LoanSimpleResDto;
+import com.billybang.loanservice.model.dto.response.UserResponseDto;
 import com.billybang.loanservice.model.entity.provider.Provider;
 import com.billybang.loanservice.model.entity.star.StarredLoan;
+import com.billybang.loanservice.model.filter.LoanPreferredItemFilter;
+import com.billybang.loanservice.model.type.CompanySize;
+import com.billybang.loanservice.model.type.InterestRateType;
 import com.billybang.loanservice.model.type.LoanType;
+import com.billybang.loanservice.model.type.PreferredItemType;
+import com.billybang.loanservice.utils.DateUtil;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -19,6 +28,7 @@ import java.util.List;
 @Table(name = "loans")
 @Getter
 @ToString
+@Slf4j
 public class Loan {
 
     @Id
@@ -35,6 +45,7 @@ public class Loan {
 
     private String productName;
 
+    @Column(length = 512)
     private String originUrl;
 
     private Integer ltv;
@@ -53,17 +64,27 @@ public class Loan {
 
     private Float maxInterestRate;
 
-    private String interestRateType;
+    @Enumerated(EnumType.STRING)
+    private InterestRateType interestRateType;
+
+    private String billybangId; // 데이터 저장 후 삭제
 
     @OneToMany(mappedBy = "loan")
     private List<LoanPreferredItem> loanPreferredItems;
 
-    // TODO 즐겨찾기 변수 추가 + toLoanDto도 수정
     @OneToMany(mappedBy = "loan")
     private List<StarredLoan> starredLoans;
 
-    public LoanDto toLoanDto(){
-        Long starredLoanId = starredLoans.isEmpty() ? null : starredLoans.get(0).getId();
+    @JsonManagedReference
+    @OneToMany(mappedBy = "loan")
+    private List<LoanUserCondition> userConditions;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "loan")
+    private List<LoanPropertyCondition> propertyConditions;
+
+    public LoanDto toLoanDto(Long userId){
+
         return LoanDto.builder()
                 .loanId(id)
                 .providerName(provider.getProviderName())
@@ -74,7 +95,7 @@ public class Loan {
                 .ltv(ltv)
                 .minInterestRate(minInterestRate)
                 .maxInterestRate(maxInterestRate)
-                .starredLoanId(starredLoanId)
+                .starred(isStarred(userId))
                 .build();
     }
 
@@ -90,15 +111,22 @@ public class Loan {
                 .build();
     }
 
-    public LoanDetailResDto toLoanDetailResDto(){
+    // todo 추후 리팩토링
+    public LoanDetailResDto toLoanDetailResDto(UserResponseDto userInfo){
+        log.info("userInfo: {}", userInfo);
         Integer maxLoanLimit = loanLimit;
-        for(LoanPreferredItem loanPreferredItem: loanPreferredItems){
-            if(loanPreferredItem.getLoanLimit() > maxLoanLimit)
-                maxLoanLimit = loanPreferredItem.getLoanLimit();
+        List<String> loanPreferredItemNames = new ArrayList<>();
+
+        for(LoanPreferredItem loanPreferredItem : loanPreferredItems) {
+            if(LoanPreferredItemFilter.filterByUserInfo(loanPreferredItem, userInfo)) {
+                loanPreferredItemNames.add(loanPreferredItem.getItemType().getName());
+                Integer itemLoanLimit = loanPreferredItem.getLoanLimit();
+                if(itemLoanLimit != null && itemLoanLimit > maxLoanLimit) {
+                    maxLoanLimit = loanPreferredItem.getLoanLimit();
+                }
+            }
         }
-        List<String> loanPreferredItemNames = loanPreferredItems.stream()
-                .map(loanPreferredItem -> loanPreferredItem.getItemType().getName()).toList();
-        Long starredLoanId = starredLoans.isEmpty() ? null : starredLoans.get(0).getId();
+
         return LoanDetailResDto.builder()
                 .providerId(provider.getId())
                 .providerName(provider.getProviderName())
@@ -113,10 +141,15 @@ public class Loan {
                 .maxTerm(maxTerm)
                 .minInterestRate(minInterestRate)
                 .maxInterestRate(maxInterestRate)
-                .interestRateType(interestRateType)
+                .interestRateType(interestRateType.getName())
                 .preferentialItems(loanPreferredItemNames)
-                .starredLoanId(starredLoanId)
+                .starred(isStarred(userInfo.getUserId()))
                 .build();
+    }
+
+    private boolean isStarred(Long userId){
+        return starredLoans.stream()
+                .map(StarredLoan::getUserId).toList().contains(userId);
     }
 
 }

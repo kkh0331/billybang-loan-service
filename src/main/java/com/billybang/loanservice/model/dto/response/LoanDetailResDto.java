@@ -1,5 +1,9 @@
 package com.billybang.loanservice.model.dto.response;
 
+import com.billybang.loanservice.model.entity.loan.LoanPropertyCondition;
+import com.billybang.loanservice.model.entity.loan.LoanUserCondition;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -7,6 +11,7 @@ import java.util.List;
 
 @Getter
 @Builder
+@AllArgsConstructor
 public class LoanDetailResDto {
 
     private Integer providerId;
@@ -39,6 +44,6 @@ public class LoanDetailResDto {
 
     private List<String> preferentialItems;
 
-    private Long starredLoanId;
+    private boolean starred;
 
 }

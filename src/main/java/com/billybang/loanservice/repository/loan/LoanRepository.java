@@ -12,12 +12,6 @@ import java.util.Optional;
 public interface LoanRepository extends JpaRepository<Loan, Long> {
 
     List<Loan> findAllByLoanType(LoanType loanType);
-
-    @Query("SELECT l FROM Loan l LEFT JOIN StarredLoan s ON l.id = s.loan.id AND s.userId = :userId")
-    List<Loan> findAllWithStarred(@Param("userId") Long userId);
-
-    @Query("SELECT l FROM Loan l LEFT JOIN StarredLoan s ON l.id = s.loan.id AND s.userId = :userId " +
-        "WHERE l.id = :loanId")
-    Optional<Loan> findByLoanIdWithStarred(@Param("loanId") Long loanId, @Param("userId") Long userId);
+    List<Loan> findAllByLoanTypeIn(List<LoanType> loanTypes);
 
 }

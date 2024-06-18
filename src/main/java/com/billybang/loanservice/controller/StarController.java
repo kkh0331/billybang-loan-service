@@ -3,15 +3,11 @@ package com.billybang.loanservice.controller;
 import com.billybang.loanservice.api.ApiResult;
 import com.billybang.loanservice.api.ApiUtils;
 import com.billybang.loanservice.api.StarApi;
-import com.billybang.loanservice.exception.common.CommonException;
-import com.billybang.loanservice.exception.common.IError;
-import com.billybang.loanservice.model.Mapper.LoanCategoryMapper;
 import com.billybang.loanservice.model.dto.loan.LoanCategoryDto;
 import com.billybang.loanservice.model.dto.request.SaveStarredLoanReqDto;
 import com.billybang.loanservice.model.dto.response.LoanSimpleResDto;
 import com.billybang.loanservice.model.dto.response.UserResponseDto;
 import com.billybang.loanservice.model.entity.loan.Loan;
-import com.billybang.loanservice.model.entity.star.StarredLoan;
 import com.billybang.loanservice.service.LoanService;
 import com.billybang.loanservice.service.StarService;
 import lombok.RequiredArgsConstructor;
@@ -59,8 +55,9 @@ public class StarController implements StarApi {
     }
 
     @Override
-    public ResponseEntity<?> deleteStarredLoan(Long starredLoanId) {
-        starService.deleteStarredLoan(starredLoanId);
+    public ResponseEntity<?> deleteStarredLoan(Long loanId) {
+        UserResponseDto userInfo = starService.getUserInfo();
+        starService.deleteStarredLoan(loanId, userInfo.getUserId());
         return ResponseEntity.noContent().build();
     }
 

@@ -10,6 +10,8 @@ public interface StarredLoanRepository extends JpaRepository<StarredLoan, Long> 
 
     Optional<StarredLoan> findByLoanIdAndUserId(Long loanId, Long userId);
 
+    void deleteByLoanIdAndUserId(Long loanId, Long userId);
+
     List<StarredLoan> findAllByUserId(Long userId);
 
 }
