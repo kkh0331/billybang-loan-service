@@ -1,10 +1,10 @@
 package com.billybang.loanservice.service;
 
-import com.billybang.loanservice.client.PropertyServiceClient;
 import com.billybang.loanservice.client.UserServiceClient;
 import com.billybang.loanservice.exception.common.BError;
 import com.billybang.loanservice.exception.common.CommonException;
 import com.billybang.loanservice.model.dto.response.*;
+import com.billybang.loanservice.model.filter.LoanFilter;
 import com.billybang.loanservice.model.mapper.LoanCategoryMapper;
 import com.billybang.loanservice.model.dto.loan.LoanCategoryDto;
 import com.billybang.loanservice.model.entity.loan.Loan;
@@ -26,20 +26,22 @@ public class LoanService {
 
     private final LoanRepository loanRepository;
     private final UserServiceClient userServiceClient;
+    private final LoanFilter loanFilter;
 //    private final PropertyServiceClient propertyServiceClient;
 
     @Transactional
     public LoanResDto getLoans(PropertyResponseDto propertyInfo, UserResponseDto userInfo) {
         LoanType loanType = toLoanType(propertyInfo.getTradeType());
         List<LoanType> loanTypes = Arrays.asList(loanType, LoanType.PERSONAL);
-        List<Loan> loans = loanRepository.findAllByLoanTypeIn(loanTypes); //todo 추후 사용자 받으면 수정
-        // TODO 사용자와 부동산에 의해서 대출 상품 필터링
-        // TODO 우대사항 고려하여 정렬
+        List<Loan> loans = loanRepository.findAllByLoanTypeIn(loanTypes)
+                .stream().filter(loan -> loanFilter.filterByPropertyAndUser(loan, propertyInfo, userInfo))
+                .toList();
+
         log.info("loans: {}", loans);
         List<LoanCategoryDto> loanCategoryDtos = LoanCategoryMapper.loansToLoanCategoryDtos(loans, userInfo.getUserId());
         return LoanResDto.builder()
                 .buildingName(propertyInfo.getArticleName())
-                .sumCount(loans.size()) // TODO 필터링 후 size로 변경
+                .sumCount(loans.size())
                 .loanCategories(loanCategoryDtos)
                 .build();
     }

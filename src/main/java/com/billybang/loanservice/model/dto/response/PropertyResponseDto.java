@@ -12,7 +12,7 @@ public class PropertyResponseDto {
 
     private String articleName;
     private TradeType tradeType;
-    private Integer area2;
-    private Integer price;
+    private int area2;
+    private int price;
 
 }
