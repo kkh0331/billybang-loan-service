@@ -52,6 +52,7 @@ public class Provider {
 
         return ProviderOverviewDto.builder()
                 .providerName(providerName)
+                .financialTier(financialTier)
                 .imgUrl(imgUrl)
                 .representativeName(representativeName)
                 .establishedAt(DateUtil.convertToKoreanDatePattern(establishedAt))
