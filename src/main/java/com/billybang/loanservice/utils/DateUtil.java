@@ -14,6 +14,7 @@ public class DateUtil {
     }
 
     public static Integer calcAge(LocalDate birthDate){
+        if(birthDate == null) return 0;
         LocalDate today = LocalDate.now();
         return Period.between(birthDate, today).getYears();
     }

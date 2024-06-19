@@ -44,6 +44,6 @@ public class LoanDetailResDto {
 
     private List<String> preferentialItems;
 
-    private boolean starred;
+    private Boolean isStarred;
 
 }

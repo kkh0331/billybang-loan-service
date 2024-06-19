@@ -95,7 +95,7 @@ public class Loan {
                 .ltv(ltv)
                 .minInterestRate(minInterestRate)
                 .maxInterestRate(maxInterestRate)
-                .starred(isStarred(userId))
+                .isStarred(isStarred(userId))
                 .build();
     }
 
@@ -143,7 +143,7 @@ public class Loan {
                 .maxInterestRate(maxInterestRate)
                 .interestRateType(interestRateType.getName())
                 .preferentialItems(loanPreferredItemNames)
-                .starred(isStarred(userInfo.getUserId()))
+                .isStarred(isStarred(userInfo.getUserId()))
                 .build();
     }
 

@@ -29,11 +29,11 @@ public class LoanUserCondition {
     @Enumerated(EnumType.STRING)
     private TargetType forTarget;
 
-    private boolean allowedForAnotherLoan;
+    private Boolean allowedForAnotherLoan;
 
-    private boolean allowedForForeigner;
+    private Boolean allowedForForeigner;
 
-    private boolean forFirstHomeBuyer;
+    private Boolean forFirstHomeBuyer;
 
     @Enumerated(EnumType.STRING)
     private TargetOccupationType targetOccupation;
