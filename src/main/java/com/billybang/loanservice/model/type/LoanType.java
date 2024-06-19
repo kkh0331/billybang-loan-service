@@ -7,7 +7,7 @@ public enum LoanType {
 
     MORTGAGE("주택담보대출"),
     JEONSE("전세자금대출"),
-    Personal("신용대출");
+    PERSONAL("개인신용대출");
 
     private final String name;
 

@@ -25,6 +25,6 @@ public class LoanDto {
 
     private Float maxInterestRate;
 
-    private Long starredLoanId;
+    private Boolean isStarred;
 
 }

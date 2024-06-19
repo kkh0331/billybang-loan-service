@@ -1,5 +1,6 @@
 package com.billybang.loanservice.api;
 
+import com.billybang.loanservice.model.dto.response.ProviderInfoResDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -19,6 +20,6 @@ public interface ProviderApi {
             @ApiResponse(responseCode = "400", description = "Bad Request")
     })
     @GetMapping("/{providerId}")
-    ResponseEntity getProviderInfo(@PathVariable("providerId") Integer providerId);
+    ResponseEntity<ApiResult<ProviderInfoResDto>> getProviderInfo(@PathVariable("providerId") Integer providerId);
 
 }

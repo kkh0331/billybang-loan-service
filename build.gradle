@@ -30,6 +30,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-actuator' // actuator
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client' // eureka client
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign' // feign client
     implementation 'org.springframework.cloud:spring-cloud-starter-config' // config client
     implementation 'org.springframework.cloud:spring-cloud-starter-bus-amqp' // bus amqp
     implementation 'org.mariadb.jdbc:mariadb-java-client' // mariadb

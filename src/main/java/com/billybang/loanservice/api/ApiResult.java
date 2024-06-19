@@ -1,0 +1,14 @@
+package com.billybang.loanservice.api;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+public class ApiResult<T> {
+
+    boolean success;
+    T response;
+}
