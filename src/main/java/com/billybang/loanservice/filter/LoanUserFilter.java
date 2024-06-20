@@ -1,9 +1,7 @@
-package com.billybang.loanservice.model.filter;
+package com.billybang.loanservice.filter;
 
-import com.billybang.loanservice.model.dto.response.PropertyResponseDto;
 import com.billybang.loanservice.model.dto.response.UserInfoResponseDto;
 import com.billybang.loanservice.model.dto.response.UserResponseDto;
-import com.billybang.loanservice.model.entity.loan.LoanPropertyCondition;
 import com.billybang.loanservice.model.entity.loan.LoanUserCondition;
 import com.billybang.loanservice.model.type.Occupation;
 import com.billybang.loanservice.model.type.TargetOccupationType;

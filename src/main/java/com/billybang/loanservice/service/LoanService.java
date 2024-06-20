@@ -1,16 +1,20 @@
 package com.billybang.loanservice.service;
 
+import com.billybang.loanservice.api.ApiResult;
 import com.billybang.loanservice.client.UserServiceClient;
 import com.billybang.loanservice.exception.common.BError;
 import com.billybang.loanservice.exception.common.CommonException;
+import com.billybang.loanservice.model.mapper.UserMapper;
 import com.billybang.loanservice.model.dto.response.*;
-import com.billybang.loanservice.model.filter.LoanFilter;
+import com.billybang.loanservice.filter.LoanFilter;
 import com.billybang.loanservice.model.mapper.LoanCategoryMapper;
 import com.billybang.loanservice.model.dto.loan.LoanCategoryDto;
 import com.billybang.loanservice.model.entity.loan.Loan;
 import com.billybang.loanservice.model.type.LoanType;
 import com.billybang.loanservice.model.type.TradeType;
+import com.billybang.loanservice.model.type.UserStatus;
 import com.billybang.loanservice.repository.loan.LoanRepository;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,6 +33,7 @@ public class LoanService {
     private final LoanRepository loanRepository;
     private final UserServiceClient userServiceClient;
     private final LoanFilter loanFilter;
+    private final UserMapper userMapper;
 //    private final PropertyServiceClient propertyServiceClient;
 
     @Transactional
@@ -43,6 +48,7 @@ public class LoanService {
         return LoanResDto.builder()
                 .buildingName(propertyInfo.getArticleName())
                 .sumCount(loans.size())
+                .userStatus(userInfo.getUserStatus())
                 .loanCategories(loanCategoryDtos)
                 .build();
     }
@@ -71,7 +77,25 @@ public class LoanService {
     }
 
     public UserResponseDto getUserInfo() {
-        return userServiceClient.getUserInfo().getResponse();
+        try{
+            ApiResult<UserResponseDto> response = userServiceClient.getUserInfo();
+            return processResponse(response);
+        } catch(FeignException e){
+            log.error("error : {}", e.toString());
+            return userMapper.getAvgData();
+        }
+    }
+
+    private UserResponseDto processResponse(ApiResult<UserResponseDto> response){
+        if (response.isSuccess()) {
+            UserResponseDto userResponse = response.getResponse();
+            if (userResponse.getUserInfo() == null) {
+                return userMapper.getAvgData(userResponse);
+            }
+            userResponse.setUserStatus(UserStatus.NORMAL);
+            return userResponse;
+        }
+        return userMapper.getAvgData();
     }
 
     public PropertyResponseDto getPropertyInfo(Long propertyId){

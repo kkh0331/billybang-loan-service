@@ -1,4 +1,4 @@
-package com.billybang.loanservice.model.filter;
+package com.billybang.loanservice.filter;
 
 import com.billybang.loanservice.model.dto.response.UserResponseDto;
 import com.billybang.loanservice.model.entity.loan.LoanPreferredItem;
