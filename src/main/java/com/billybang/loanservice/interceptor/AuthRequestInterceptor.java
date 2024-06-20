@@ -15,6 +15,7 @@ public class AuthRequestInterceptor implements RequestInterceptor {
     @Override
     public void apply(RequestTemplate requestTemplate) {
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+
         if (requestAttributes == null) {
             throw new CommonException(BError.NOT_VALID, "request");
         }
