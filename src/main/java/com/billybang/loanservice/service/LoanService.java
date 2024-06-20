@@ -38,8 +38,11 @@ public class LoanService {
 
     @Transactional
     public LoanResDto getLoans(PropertyResponseDto propertyInfo, UserResponseDto userInfo) {
+        log.info("propertyInfo : {}", propertyInfo);
+        log.info("userInfo : {}", userInfo);
         LoanType loanType = toLoanType(propertyInfo.getTradeType());
         List<LoanType> loanTypes = Arrays.asList(loanType, LoanType.PERSONAL);
+        log.info("loanTypes : {}", loanTypes);
         List<Loan> loans = loanRepository.findAllByLoanTypeIn(loanTypes)
                 .stream().filter(loan -> loanFilter.filterByPropertyAndUser(loan, propertyInfo, userInfo))
                 .sorted(Comparator.comparing(Loan::getMinInterestRate))
