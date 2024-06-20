@@ -55,6 +55,7 @@ public class StarService {
     }
 
     public UserResponseDto getUserInfo() {
-        return userServiceClient.getUserInfo().getResponse();
+//        return userServiceClient.getUserInfo().getResponse();
+        return null;
     }
 }

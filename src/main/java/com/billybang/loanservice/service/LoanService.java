@@ -82,7 +82,10 @@ public class LoanService {
             return processResponse(response);
         } catch(FeignException e){
             log.error("error : {}", e.toString());
-            return userMapper.getAvgData();
+            return userMapper.getAvgData(UserStatus.UNAUTHORIZED);
+        } catch(CommonException e){
+            log.info("useInfo : {}", e.toString());
+            return userMapper.getAvgData(UserStatus.NO_LOGIN);
         }
     }
 
@@ -95,7 +98,7 @@ public class LoanService {
             userResponse.setUserStatus(UserStatus.NORMAL);
             return userResponse;
         }
-        return userMapper.getAvgData();
+        return userMapper.getAvgData(UserStatus.UNAUTHORIZED);
     }
 
     public PropertyResponseDto getPropertyInfo(Long propertyId){

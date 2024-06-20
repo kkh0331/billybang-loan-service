@@ -14,7 +14,6 @@ import java.time.LocalDate;
 public class UserInfoMapper {
 
     public UserInfoResponseDto getAvgDataByAge(LocalDate birthDate){
-        log.info("brithData : {}", birthDate);
         // TODO 나이에 20대, 30대, 40대, 50대, 그 외 평균 데이터 생성
         // TODO 일단은 20대 평균데이터를 넣자
         int age = DateUtil.calcAge(birthDate);

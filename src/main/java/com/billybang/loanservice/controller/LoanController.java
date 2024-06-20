@@ -20,6 +20,7 @@ public class LoanController implements LoanApi {
     @Override
     public ResponseEntity<ApiResult<LoanResDto>> getLoans(Long propertyId) {
         UserResponseDto userInfo = loanService.getUserInfo();
+        log.info("userInfo : {}", userInfo);
         PropertyResponseDto propertyInfo = loanService.getPropertyInfo(propertyId);
         LoanResDto loans = loanService.getLoans(propertyInfo, userInfo);
         return ResponseEntity.ok(ApiUtils.success(loans));
@@ -36,7 +37,6 @@ public class LoanController implements LoanApi {
     @Override
     public ResponseEntity<ApiResult<LoanDetailResDto>> getLoanDetail(Long loanId) {
         UserResponseDto userInfo = loanService.getUserInfo();
-        log.info("userInfo : {}", userInfo);
         LoanDetailResDto loanDetailResDto = loanService.getLoanDetail(loanId, userInfo);
         return ResponseEntity.ok(ApiUtils.success(loanDetailResDto));
     }
