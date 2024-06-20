@@ -1,6 +1,7 @@
 package com.billybang.loanservice.service;
 
 import com.billybang.loanservice.api.ApiResult;
+import com.billybang.loanservice.client.PropertyServiceClient;
 import com.billybang.loanservice.client.UserServiceClient;
 import com.billybang.loanservice.exception.common.BError;
 import com.billybang.loanservice.exception.common.CommonException;
@@ -34,22 +35,17 @@ public class LoanService {
     private final UserServiceClient userServiceClient;
     private final LoanFilter loanFilter;
     private final UserMapper userMapper;
-//    private final PropertyServiceClient propertyServiceClient;
+    private final PropertyServiceClient propertyServiceClient;
 
     @Transactional
     public LoanResDto getLoans(PropertyResponseDto propertyInfo, UserResponseDto userInfo) {
-        log.info("propertyInfo : {}", propertyInfo);
-        log.info("userInfo : {}", userInfo);
         LoanType loanType = toLoanType(propertyInfo.getTradeType());
         List<LoanType> loanTypes = Arrays.asList(loanType, LoanType.PERSONAL);
-        log.info("loanTypes : {}", loanTypes);
         List<Loan> loans = loanRepository.findAllByLoanTypeIn(loanTypes)
                 .stream().filter(loan -> loanFilter.filterByPropertyAndUser(loan, propertyInfo, userInfo))
                 .sorted(Comparator.comparing(Loan::getMinInterestRate))
                 .toList();
-        log.info("loans : {}", loans);
         List<LoanCategoryDto> loanCategoryDtos = LoanCategoryMapper.loansToLoanCategoryDtos(loans, userInfo.getUserId());
-        log.info("loanCategoryDtos : {}", loanCategoryDtos);
         return LoanResDto.builder()
                 .buildingName(propertyInfo.getArticleName())
                 .sumCount(loans.size())
@@ -88,9 +84,6 @@ public class LoanService {
         } catch(FeignException e){
             log.error("error : {}", e.toString());
             return userMapper.getAvgData(UserStatus.UNAUTHORIZED);
-        } catch(CommonException e){
-            log.info("useInfo : {}", e.toString());
-            return userMapper.getAvgData(UserStatus.NO_LOGIN);
         }
     }
 
@@ -107,13 +100,13 @@ public class LoanService {
     }
 
     public PropertyResponseDto getPropertyInfo(Long propertyId){
-//        return propertyServiceClient.getPropertyInfo(propertyId).getResponse();
-        return PropertyResponseDto.builder()
-                .articleName("신한투자증권건물")
-                .tradeType(TradeType.DEAL)
-                .area2(100)
-                .price(500)
-                .build();
+        try{
+            ApiResult<PropertyResponseDto> propertyResponseDto = propertyServiceClient.getPropertyInfo(propertyId);
+            return propertyResponseDto.getResponse();
+        } catch(FeignException e){
+            log.error("error : {}", e.toString());
+            throw new CommonException(BError.NOT_EXIST, "Property");
+        }
     }
 
     private LoanType toLoanType(TradeType tradeType){

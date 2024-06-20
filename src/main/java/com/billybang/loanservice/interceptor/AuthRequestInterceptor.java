@@ -21,13 +21,11 @@ public class AuthRequestInterceptor implements RequestInterceptor {
         }
 
         Cookie[] cookies = requestAttributes.getRequest().getCookies();
-        if (cookies == null) {
-            throw new CommonException(BError.NOT_EXIST, "cookie");
+        if (cookies != null) {
+            requestTemplate.header("Cookie", String.join("; ",
+                    Arrays.stream(cookies)
+                            .map(cookie -> "%s=%s".formatted(cookie.getName(), cookie.getValue()))
+                            .toArray(String[]::new)));
         }
-
-        requestTemplate.header("Cookie", String.join("; ",
-                Arrays.stream(cookies)
-                        .map(cookie -> "%s=%s".formatted(cookie.getName(), cookie.getValue()))
-                        .toArray(String[]::new)));
     }
 }
