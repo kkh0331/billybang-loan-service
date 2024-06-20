@@ -44,7 +44,9 @@ public class LoanService {
                 .stream().filter(loan -> loanFilter.filterByPropertyAndUser(loan, propertyInfo, userInfo))
                 .sorted(Comparator.comparing(Loan::getMinInterestRate))
                 .toList();
+        log.info("loans : {}", loans);
         List<LoanCategoryDto> loanCategoryDtos = LoanCategoryMapper.loansToLoanCategoryDtos(loans, userInfo.getUserId());
+        log.info("loanCategoryDtos : {}", loanCategoryDtos);
         return LoanResDto.builder()
                 .buildingName(propertyInfo.getArticleName())
                 .sumCount(loans.size())
