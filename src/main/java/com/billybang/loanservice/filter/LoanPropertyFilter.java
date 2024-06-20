@@ -1,10 +1,9 @@
-package com.billybang.loanservice.model.filter;
+package com.billybang.loanservice.filter;
 
 import com.billybang.loanservice.model.dto.response.PropertyResponseDto;
 import com.billybang.loanservice.model.dto.response.UserResponseDto;
 import com.billybang.loanservice.model.entity.loan.LoanPropertyCondition;
 import com.billybang.loanservice.model.type.TargetType;
-import com.billybang.loanservice.utils.DateUtil;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
