@@ -34,10 +34,10 @@ public class LoanFilter {
 
     public static boolean isSatisfiedForTarget(TargetType targetType, UserResponseDto userInfo){
         int age = DateUtil.calcAge(userInfo.getBirthDate());
-        Boolean isNewlyMarried = userInfo.getUserInfo().getIsNewlyMarried();
+        Integer yearsOfMarriage = userInfo.getUserInfo().getYearsOfMarriage();
         Integer childrenCount = userInfo.getUserInfo().getChildrenCount();
         return switch(targetType){
-            case NEWLY_MARRIED -> isNewlyMarried != null && isNewlyMarried;
+            case NEWLY_MARRIED -> yearsOfMarriage != null && yearsOfMarriage <= 7;
             case MULTIPLE_CHILDREN -> childrenCount != null && childrenCount >= 2;
             case YOUTH -> 19 <= age && age <= 34;
             case DEFAULT -> true;

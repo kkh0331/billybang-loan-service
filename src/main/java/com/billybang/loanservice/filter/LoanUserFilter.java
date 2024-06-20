@@ -36,7 +36,8 @@ public class LoanUserFilter {
                 && isSatisfiedEmploymentDuration(userCondition.getMinEmploymentDuration(), userCondition.getMaxEmploymentDuration(), userInfo.getEmploymentDuration())
                 && isSatisfiedAge(userCondition.getMinAge(), userCondition.getMaxAge(), userResponseDto.getBirthDate())
                 && isSatisfiedIndividualIncome(userCondition.getMinIndividualIncome(), userCondition.getMaxIndividualIncome(), userInfo.getIndividualIncome())
-                && isSatisfiedMarriedTotalIncome(userCondition.getMaxMarriedTotalIncome(), userCondition.getMaxMarriedTotalIncome());
+                && isSatisfiedMarriedTotalIncome(userCondition.getMaxMarriedTotalIncome(), userInfo.getTotalMarriedIncome(), userInfo.getIsMarried())
+                && isSatisfiedMarriedTotalAssets(userCondition.getMaxMarriedTotalAssets(), userInfo.getTotalMarriedAssets(), userInfo.getIsMarried());
     }
 
     private boolean isSatisfiedAllowedForAnotherLoan(Boolean allowedForAnotherLoan, Boolean hasOtherLoans){
@@ -67,7 +68,7 @@ public class LoanUserFilter {
 
     private boolean isSatisfiedEmploymentDuration(Integer minEmploymentDuration, Integer maxEmploymentDuration, Integer employmentDuration){
         if(minEmploymentDuration == null && maxEmploymentDuration == null) return true;
-        if(employmentDuration == null) return false;
+        if(employmentDuration == null) return true;
         boolean isSatisfiedMinEmploymentDuration = (minEmploymentDuration == null || minEmploymentDuration <= employmentDuration);
         boolean isSatisfiedMaxEmploymentDuration = (maxEmploymentDuration == null || employmentDuration <= maxEmploymentDuration);
         return isSatisfiedMinEmploymentDuration && isSatisfiedMaxEmploymentDuration;
@@ -82,15 +83,22 @@ public class LoanUserFilter {
 
     private boolean isSatisfiedIndividualIncome(Integer minIndividualIncome, Integer maxIndividualIncome, Integer individualIncome){
         if(minIndividualIncome == null && maxIndividualIncome == null) return true;
-        if(individualIncome == null) return false;
+        if(individualIncome == null) return true;
         boolean isSatisfiedMinIndividualIncome = (minIndividualIncome == null || minIndividualIncome <= individualIncome);
         boolean isSatisfiedMaxIndividualIncome = (maxIndividualIncome == null || individualIncome <= maxIndividualIncome);
         return isSatisfiedMinIndividualIncome && isSatisfiedMaxIndividualIncome;
     }
 
-    private boolean isSatisfiedMarriedTotalIncome(Integer maxMarriedTotalIncome, Integer totalMarriedIncome){
-        if(maxMarriedTotalIncome == null) return true;
+    private boolean isSatisfiedMarriedTotalIncome(Integer maxMarriedTotalIncome, Integer totalMarriedIncome, Boolean isMarried){
+        if(isMarried == null || !isMarried) return true;
+        if(maxMarriedTotalIncome == null || totalMarriedIncome == null) return true;
         return totalMarriedIncome <= maxMarriedTotalIncome;
+    }
+
+    private boolean isSatisfiedMarriedTotalAssets(Integer maxMarriedTotalAssets, Integer totalMarriedAssets, Boolean isMarried){
+        if(isMarried == null || !isMarried) return true;
+        if(maxMarriedTotalAssets == null || totalMarriedAssets == null) return true;
+        return totalMarriedAssets <= maxMarriedTotalAssets;
     }
 
 }

@@ -34,7 +34,7 @@ public class UserInfoMapper {
                 .isForeign(false)
                 .isFirstHouseBuyer(true)
                 .isMarried(false)
-                .isNewlyMarried(false)
+                .yearsOfMarriage(null)
                 .hasOtherLoans(false)
                 .build();
     }
