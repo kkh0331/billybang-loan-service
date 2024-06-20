@@ -15,7 +15,6 @@ public class LoanCategoryMapper {
 
     public static List<LoanCategoryDto> loansToLoanCategoryDtos(List<Loan> loans, Long userId){
         Map<LoanType, List<Loan>> categorizedLoans = loans.stream().collect(Collectors.groupingBy(Loan::getLoanType));
-        log.info("categorizedLoans : {}", categorizedLoans);
         return categorizedLoans.entrySet().stream()
                 .map(entry -> loansToLoanCategoryDto(entry.getKey(), entry.getValue(), userId))
                 .toList();
@@ -23,7 +22,6 @@ public class LoanCategoryMapper {
 
     private static LoanCategoryDto loansToLoanCategoryDto(LoanType loanType, List<Loan> loans, Long userId){
         List<LoanDto> loanDtos = loans.stream().map(loan -> loan.toLoanDto(userId)).toList();
-        log.info("loanDtos : {}", loanDtos);
         return LoanCategoryDto.builder()
                 .loanType(loanType.getName())
                 .loans(loanDtos)
