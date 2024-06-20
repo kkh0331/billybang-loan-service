@@ -14,7 +14,7 @@ public class UserMapper {
 
     private UserInfoMapper userInfoMapper;
 
-    public UserResponseDto getAvgData(){
+    public UserResponseDto getAvgData(UserStatus userStatus){
         LocalDate birtDate = LocalDate.of(1998, 6, 20);
         return UserResponseDto.builder()
                 .userId(null)
@@ -22,7 +22,7 @@ public class UserMapper {
                 .birthDate(birtDate)
                 .nickname(null)
                 .userInfo(userInfoMapper.getAvgDataByAge(birtDate))
-                .userStatus(UserStatus.UNAUTHORIZED)
+                .userStatus(userStatus)
                 .build();
     }
 
