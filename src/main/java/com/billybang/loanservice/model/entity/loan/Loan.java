@@ -98,6 +98,7 @@ public class Loan {
 
     public LoanSimpleResDto toLoanSimpleResDto(){
         return LoanSimpleResDto.builder()
+                .loanId(id)
                 .providerName(provider.getProviderName())
                 .providerImgUrl(provider.getImgUrl())
                 .productName(productName)

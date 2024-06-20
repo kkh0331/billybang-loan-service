@@ -29,25 +29,25 @@ public class StarController implements StarApi {
     public ResponseEntity<?> saveStarredLoan(SaveStarredLoanReqDto saveStarredLoanReqDto) {
         Long loanId = saveStarredLoanReqDto.getLoanId();
         Loan loan = loanService.getLoanByLoanId(loanId);
-        UserResponseDto userInfo = starService.getUserInfo();
-        log.info("saveStarredLoan userId : {}", userInfo.getUserId());
-        starService.saveStarredLoan(loan, userInfo.getUserId());
+        Long userId = starService.getUserId();
+        log.info("saveStarredLoan userId : {}", userId);
+        starService.saveStarredLoan(loan, userId);
         return ResponseEntity.created(null).body(ApiUtils.success(null));
     }
 
     @Override
     public ResponseEntity<ApiResult<List<LoanCategoryDto>>> getStarredLoans() {
-        UserResponseDto userInfo = starService.getUserInfo();
-        log.info("getStarredLoans userId : {}", userInfo.getUserId());
-        List<LoanCategoryDto> loans = starService.getLoansByUserId(userInfo.getUserId());
+        Long userId = starService.getUserId();
+        log.info("getStarredLoans userId : {}", userId);
+        List<LoanCategoryDto> loans = starService.getLoansByUserId(userId);
         return ResponseEntity.ok(ApiUtils.success(loans));
     }
 
     @Override
     public ResponseEntity<ApiResult<List<LoanSimpleResDto>>> getStarredLoansSimple(Integer count) {
-        UserResponseDto userInfo = starService.getUserInfo();
-        log.info("getStarredLoansSimple userId : {}", userInfo.getUserId());
-        List<LoanSimpleResDto> loanSimpleResDtos = starService.getLoansSimpleByUserId(userInfo.getUserId());
+        Long userId = starService.getUserId();
+        log.info("getStarredLoansSimple userId : {}", userId);
+        List<LoanSimpleResDto> loanSimpleResDtos = starService.getLoansSimpleByUserId(userId);
         if(count == null){
             return ResponseEntity.ok(ApiUtils.success(loanSimpleResDtos));
         }
@@ -56,8 +56,8 @@ public class StarController implements StarApi {
 
     @Override
     public ResponseEntity<?> deleteStarredLoan(Long loanId) {
-        UserResponseDto userInfo = starService.getUserInfo();
-        starService.deleteStarredLoan(loanId, userInfo.getUserId());
+        Long userId = starService.getUserId();
+        starService.deleteStarredLoan(loanId, userId);
         return ResponseEntity.noContent().build();
     }
 
