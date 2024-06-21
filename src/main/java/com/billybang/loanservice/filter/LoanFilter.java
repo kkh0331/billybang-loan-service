@@ -1,8 +1,8 @@
 package com.billybang.loanservice.filter;
 
 import com.billybang.loanservice.model.dto.request.GetLoansReqDto;
-import com.billybang.loanservice.model.dto.response.PropertyResponseDto;
-import com.billybang.loanservice.model.dto.response.UserResponseDto;
+import com.billybang.loanservice.model.dto.response.PropertyResDto;
+import com.billybang.loanservice.model.dto.response.UserResDto;
 import com.billybang.loanservice.model.entity.loan.Loan;
 import com.billybang.loanservice.model.type.TargetType;
 import com.billybang.loanservice.utils.DateUtil;
@@ -20,7 +20,7 @@ public class LoanFilter {
     private final LoanPropertyFilter loanPropertyFilter;
     private final LoanUserFilter loanUserFilter;
 
-    public boolean filterByPropertyAndUser(Loan loan, PropertyResponseDto propertyInfo, UserResponseDto userInfo){
+    public boolean filterByPropertyAndUser(Loan loan, PropertyResDto propertyInfo, UserResDto userInfo){
         List<TargetType> filteredPropertyTargets = loanPropertyFilter.filterPropertyTargets(loan.getPropertyConditions(), propertyInfo, userInfo);
         List<TargetType> filteredUserTargets = loanUserFilter.filterUserTargets(loan.getUserConditions(), userInfo);
 
@@ -33,7 +33,7 @@ public class LoanFilter {
         return filteredPropertyTargets.stream().anyMatch(filteredUserTargets::contains);
     }
 
-    public static boolean isSatisfiedForTarget(TargetType targetType, UserResponseDto userInfo){
+    public static boolean isSatisfiedForTarget(TargetType targetType, UserResDto userInfo){
         int age = DateUtil.calcAge(userInfo.getBirthDate());
         Integer yearsOfMarriage = userInfo.getUserInfo().getYearsOfMarriage();
         Integer childrenCount = userInfo.getUserInfo().getChildrenCount();

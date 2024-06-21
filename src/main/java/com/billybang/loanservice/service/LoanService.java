@@ -39,7 +39,7 @@ public class LoanService {
     private final PropertyServiceClient propertyServiceClient;
 
     @Transactional
-    public LoanResDto getLoans(PropertyResponseDto propertyInfo, UserResponseDto userInfo, GetLoansReqDto loansReqDto) {
+    public LoanResDto getLoans(PropertyResDto propertyInfo, UserResDto userInfo, GetLoansReqDto loansReqDto) {
         LoanType loanType = toLoanType(propertyInfo.getTradeType());
         List<LoanType> loanTypes = Arrays.asList(loanType, LoanType.PERSONAL);
         List<Loan> loans = loanRepository.findAllByLoanTypeIn(loanTypes)
@@ -58,7 +58,7 @@ public class LoanService {
     }
 
     @Transactional
-    public LoanSimpleResDto getLoanSimple(PropertyResponseDto propertyInfo, UserResponseDto userInfo) {
+    public LoanSimpleResDto getLoanSimple(PropertyResDto propertyInfo, UserResDto userInfo) {
         LoanType loanType = toLoanType(propertyInfo.getTradeType());
         Optional<Loan> resultLoan = loanRepository.findAllByLoanType(loanType)
                 .stream().filter(loan -> loanFilter.filterByPropertyAndUser(loan, propertyInfo, userInfo))
@@ -68,7 +68,7 @@ public class LoanService {
     }
 
     @Transactional
-    public LoanDetailResDto getLoanDetail(Long loanId, UserResponseDto userInfo) {
+    public LoanDetailResDto getLoanDetail(Long loanId, UserResDto userInfo) {
         Loan resultLoan = loanRepository.findById(loanId)
             .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "Loan"));
         return resultLoan.toLoanDetailResDto(userInfo);
@@ -80,9 +80,9 @@ public class LoanService {
                 .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "Loan"));
     }
 
-    public UserResponseDto getUserInfo() {
+    public UserResDto getUserInfo() {
         try{
-            ApiResult<UserResponseDto> response = userServiceClient.getUserInfo();
+            ApiResult<UserResDto> response = userServiceClient.getUserInfo();
             return processResponse(response);
         } catch(FeignException e){
             log.error("error : {}", e.toString());
@@ -90,9 +90,9 @@ public class LoanService {
         }
     }
 
-    private UserResponseDto processResponse(ApiResult<UserResponseDto> response){
+    private UserResDto processResponse(ApiResult<UserResDto> response){
         if (response.isSuccess()) {
-            UserResponseDto userResponse = response.getResponse();
+            UserResDto userResponse = response.getResponse();
             if (userResponse.getUserInfo() == null) {
                 return userMapper.getAvgData(userResponse);
             }
@@ -102,9 +102,9 @@ public class LoanService {
         return userMapper.getAvgData(UserStatus.UNAUTHORIZED);
     }
 
-    public PropertyResponseDto getPropertyInfo(Long propertyId){
+    public PropertyResDto getPropertyInfo(Long propertyId){
         try{
-            ApiResult<PropertyResponseDto> propertyResponseDto = propertyServiceClient.getPropertyInfo(propertyId);
+            ApiResult<PropertyResDto> propertyResponseDto = propertyServiceClient.getPropertyInfo(propertyId);
             return propertyResponseDto.getResponse();
         } catch(FeignException e){
             log.error("error : {}", e.toString());

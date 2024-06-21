@@ -21,24 +21,24 @@ public class LoanController implements LoanApi {
     @Override
     public ResponseEntity<ApiResult<LoanResDto>> getLoans(GetLoansReqDto loansReqDto) {
         log.info("getLoansReqDto: {}", loansReqDto);
-        UserResponseDto userInfo = loanService.getUserInfo();
+        UserResDto userInfo = loanService.getUserInfo();
         log.info("userInfo : {}", userInfo);
-        PropertyResponseDto propertyInfo = loanService.getPropertyInfo(loansReqDto.getPropertyId());
+        PropertyResDto propertyInfo = loanService.getPropertyInfo(loansReqDto.getPropertyId());
         LoanResDto loans = loanService.getLoans(propertyInfo, userInfo, loansReqDto);
         return ResponseEntity.ok(ApiUtils.success(loans));
     }
 
     @Override
     public ResponseEntity<ApiResult<LoanSimpleResDto>> getLoanSimple(Long propertyId) {
-        UserResponseDto userInfo = loanService.getUserInfo();
-        PropertyResponseDto propertyInfo = loanService.getPropertyInfo(propertyId);
+        UserResDto userInfo = loanService.getUserInfo();
+        PropertyResDto propertyInfo = loanService.getPropertyInfo(propertyId);
         LoanSimpleResDto loanSimpleResDto = loanService.getLoanSimple(propertyInfo, userInfo);
         return ResponseEntity.ok(ApiUtils.success(loanSimpleResDto));
     }
 
     @Override
     public ResponseEntity<ApiResult<LoanDetailResDto>> getLoanDetail(Long loanId) {
-        UserResponseDto userInfo = loanService.getUserInfo();
+        UserResDto userInfo = loanService.getUserInfo();
         LoanDetailResDto loanDetailResDto = loanService.getLoanDetail(loanId, userInfo);
         return ResponseEntity.ok(ApiUtils.success(loanDetailResDto));
     }

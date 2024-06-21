@@ -1,13 +1,13 @@
 package com.billybang.loanservice.filter;
 
-import com.billybang.loanservice.model.dto.response.UserResponseDto;
+import com.billybang.loanservice.model.dto.response.UserResDto;
 import com.billybang.loanservice.model.entity.loan.LoanPreferredItem;
 import com.billybang.loanservice.model.type.CompanySize;
 import com.billybang.loanservice.utils.DateUtil;
 
 public class LoanPreferredItemFilter {
 
-    public static boolean filterByUserInfo(LoanPreferredItem loanPreferredItem, UserResponseDto userInfo){
+    public static boolean filterByUserInfo(LoanPreferredItem loanPreferredItem, UserResDto userInfo){
         int age = DateUtil.calcAge(userInfo.getBirthDate());
         Integer yearsOfMarriage = userInfo.getUserInfo().getYearsOfMarriage();
         Integer childrenCount = userInfo.getUserInfo().getChildrenCount();

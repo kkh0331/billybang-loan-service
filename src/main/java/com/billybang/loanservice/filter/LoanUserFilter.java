@@ -1,7 +1,7 @@
 package com.billybang.loanservice.filter;
 
-import com.billybang.loanservice.model.dto.response.UserInfoResponseDto;
-import com.billybang.loanservice.model.dto.response.UserResponseDto;
+import com.billybang.loanservice.model.dto.response.UserInfoResDto;
+import com.billybang.loanservice.model.dto.response.UserResDto;
 import com.billybang.loanservice.model.entity.loan.LoanUserCondition;
 import com.billybang.loanservice.model.type.Occupation;
 import com.billybang.loanservice.model.type.TargetOccupationType;
@@ -16,25 +16,25 @@ import java.util.List;
 @Component
 public class LoanUserFilter {
 
-    public List<TargetType> filterUserTargets(List<LoanUserCondition> userConditions, UserResponseDto userResponseDto){
+    public List<TargetType> filterUserTargets(List<LoanUserCondition> userConditions, UserResDto userResDto){
         List<TargetType> filteredUserTargets = new ArrayList<>();
         for(LoanUserCondition userCondition : userConditions){
-            if(isSatisfiedUserCondition(userCondition, userResponseDto)) {
+            if(isSatisfiedUserCondition(userCondition, userResDto)) {
                 filteredUserTargets.add(userCondition.getForTarget());
             }
         }
         return filteredUserTargets;
     }
 
-    private boolean isSatisfiedUserCondition(LoanUserCondition userCondition, UserResponseDto userResponseDto){
-        UserInfoResponseDto userInfo = userResponseDto.getUserInfo();
-        return LoanFilter.isSatisfiedForTarget(userCondition.getForTarget(), userResponseDto)
+    private boolean isSatisfiedUserCondition(LoanUserCondition userCondition, UserResDto userResDto){
+        UserInfoResDto userInfo = userResDto.getUserInfo();
+        return LoanFilter.isSatisfiedForTarget(userCondition.getForTarget(), userResDto)
                 && isSatisfiedAllowedForAnotherLoan(userCondition.getAllowedForAnotherLoan(), userInfo.getHasOtherLoans())
                 && isSatisfiedAllowedForForeigner(userCondition.getAllowedForForeigner(), userInfo.getIsForeign())
                 && isSatisfiedForFirstHomeBuyer(userCondition.getForFirstHomeBuyer(), userInfo.getIsFirstHouseBuyer())
                 && isSatisfiedTargetOccupation(userCondition.getTargetOccupation(), userInfo.getOccupation())
                 && isSatisfiedEmploymentDuration(userCondition.getMinEmploymentDuration(), userCondition.getMaxEmploymentDuration(), userInfo.getEmploymentDuration())
-                && isSatisfiedAge(userCondition.getMinAge(), userCondition.getMaxAge(), userResponseDto.getBirthDate())
+                && isSatisfiedAge(userCondition.getMinAge(), userCondition.getMaxAge(), userResDto.getBirthDate())
                 && isSatisfiedIndividualIncome(userCondition.getMinIndividualIncome(), userCondition.getMaxIndividualIncome(), userInfo.getIndividualIncome())
                 && isSatisfiedMarriedTotalIncome(userCondition.getMaxMarriedTotalIncome(), userInfo.getTotalMarriedIncome(), userInfo.getIsMarried())
                 && isSatisfiedMarriedTotalAssets(userCondition.getMaxMarriedTotalAssets(), userInfo.getTotalMarriedAssets(), userInfo.getIsMarried());

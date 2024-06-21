@@ -3,7 +3,7 @@ package com.billybang.loanservice.model.entity.loan;
 import com.billybang.loanservice.model.dto.loan.LoanDto;
 import com.billybang.loanservice.model.dto.response.LoanDetailResDto;
 import com.billybang.loanservice.model.dto.response.LoanSimpleResDto;
-import com.billybang.loanservice.model.dto.response.UserResponseDto;
+import com.billybang.loanservice.model.dto.response.UserResDto;
 import com.billybang.loanservice.model.entity.provider.Provider;
 import com.billybang.loanservice.model.entity.star.StarredLoan;
 import com.billybang.loanservice.filter.LoanPreferredItemFilter;
@@ -110,7 +110,7 @@ public class Loan {
     }
 
     // todo 추후 리팩토링
-    public LoanDetailResDto toLoanDetailResDto(UserResponseDto userInfo){
+    public LoanDetailResDto toLoanDetailResDto(UserResDto userInfo){
         log.info("userInfo: {}", userInfo);
         Integer maxLoanLimit = loanLimit;
         List<String> loanPreferredItemNames = new ArrayList<>();

@@ -6,7 +6,6 @@ import com.billybang.loanservice.api.StarApi;
 import com.billybang.loanservice.model.dto.loan.LoanCategoryDto;
 import com.billybang.loanservice.model.dto.request.SaveStarredLoanReqDto;
 import com.billybang.loanservice.model.dto.response.LoanSimpleResDto;
-import com.billybang.loanservice.model.dto.response.UserResponseDto;
 import com.billybang.loanservice.model.entity.loan.Loan;
 import com.billybang.loanservice.service.LoanService;
 import com.billybang.loanservice.service.StarService;

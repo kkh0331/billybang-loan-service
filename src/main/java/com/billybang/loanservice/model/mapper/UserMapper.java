@@ -1,7 +1,7 @@
 package com.billybang.loanservice.model.mapper;
 
-import com.billybang.loanservice.model.dto.response.UserInfoResponseDto;
-import com.billybang.loanservice.model.dto.response.UserResponseDto;
+import com.billybang.loanservice.model.dto.response.UserInfoResDto;
+import com.billybang.loanservice.model.dto.response.UserResDto;
 import com.billybang.loanservice.model.type.UserStatus;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -14,9 +14,9 @@ public class UserMapper {
 
     private UserInfoMapper userInfoMapper;
 
-    public UserResponseDto getAvgData(UserStatus userStatus){
+    public UserResDto getAvgData(UserStatus userStatus){
         LocalDate birtDate = LocalDate.of(1998, 6, 20);
-        return UserResponseDto.builder()
+        return UserResDto.builder()
                 .userId(null)
                 .email(null)
                 .birthDate(birtDate)
@@ -26,14 +26,14 @@ public class UserMapper {
                 .build();
     }
 
-    public UserResponseDto getAvgData(UserResponseDto userResponseDto){
-        LocalDate birtDate = userResponseDto.getBirthDate();
-        UserInfoResponseDto userInfo = userInfoMapper.getAvgDataByAge(birtDate);
-        return UserResponseDto.builder()
-                .userId(userResponseDto.getUserId())
-                .email(userResponseDto.getEmail())
+    public UserResDto getAvgData(UserResDto userResDto){
+        LocalDate birtDate = userResDto.getBirthDate();
+        UserInfoResDto userInfo = userInfoMapper.getAvgDataByAge(birtDate);
+        return UserResDto.builder()
+                .userId(userResDto.getUserId())
+                .email(userResDto.getEmail())
                 .birthDate(birtDate)
-                .nickname(userResponseDto.getNickname())
+                .nickname(userResDto.getNickname())
                 .userInfo(userInfo)
                 .userStatus(UserStatus.NO_INFO)
                 .build();

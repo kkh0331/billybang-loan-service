@@ -7,7 +7,7 @@ import com.billybang.loanservice.exception.common.CommonException;
 import com.billybang.loanservice.model.mapper.LoanCategoryMapper;
 import com.billybang.loanservice.model.dto.loan.LoanCategoryDto;
 import com.billybang.loanservice.model.dto.response.LoanSimpleResDto;
-import com.billybang.loanservice.model.dto.response.UserResponseDto;
+import com.billybang.loanservice.model.dto.response.UserResDto;
 import com.billybang.loanservice.model.entity.loan.Loan;
 import com.billybang.loanservice.model.entity.star.StarredLoan;
 import com.billybang.loanservice.repository.star.StarredLoanRepository;
@@ -58,7 +58,7 @@ public class StarService {
 
     public Long getUserId() {
         try{
-            ApiResult<UserResponseDto> response = userServiceClient.getUserInfo();
+            ApiResult<UserResDto> response = userServiceClient.getUserInfo();
             if(response.isSuccess()){
                 return response.getResponse().getUserId();
             }

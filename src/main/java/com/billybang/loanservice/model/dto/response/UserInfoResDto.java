@@ -10,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class UserInfoResponseDto {
+public class UserInfoResDto {
 
     private Occupation occupation;
     private CompanySize companySize;

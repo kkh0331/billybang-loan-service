@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class PropertyResponseDto {
+public class PropertyResDto {
 
     private String articleName;
     private TradeType tradeType;
