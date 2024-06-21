@@ -7,6 +7,8 @@ import lombok.Getter;
 @Builder
 public class LoanSimpleResDto {
 
+    private Long loanId;
+
     private String providerName;
 
     private String providerImgUrl;

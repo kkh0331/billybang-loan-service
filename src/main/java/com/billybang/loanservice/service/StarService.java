@@ -1,15 +1,17 @@
 package com.billybang.loanservice.service;
 
+import com.billybang.loanservice.api.ApiResult;
 import com.billybang.loanservice.client.UserServiceClient;
 import com.billybang.loanservice.exception.common.BError;
 import com.billybang.loanservice.exception.common.CommonException;
 import com.billybang.loanservice.model.mapper.LoanCategoryMapper;
 import com.billybang.loanservice.model.dto.loan.LoanCategoryDto;
 import com.billybang.loanservice.model.dto.response.LoanSimpleResDto;
-import com.billybang.loanservice.model.dto.response.UserResponseDto;
+import com.billybang.loanservice.model.dto.response.UserResDto;
 import com.billybang.loanservice.model.entity.loan.Loan;
 import com.billybang.loanservice.model.entity.star.StarredLoan;
 import com.billybang.loanservice.repository.star.StarredLoanRepository;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -54,8 +56,15 @@ public class StarService {
         starredLoanRepository.deleteByLoanIdAndUserId(loanId, userId);
     }
 
-    public UserResponseDto getUserInfo() {
-//        return userServiceClient.getUserInfo().getResponse();
-        return null;
+    public Long getUserId() {
+        try{
+            ApiResult<UserResDto> response = userServiceClient.getUserInfo();
+            if(response.isSuccess()){
+                return response.getResponse().getUserId();
+            }
+        } catch(FeignException e){
+            log.error("error : {}", e.toString());
+        }
+        throw new CommonException(BError.NOT_EXIST, "User");
     }
 }

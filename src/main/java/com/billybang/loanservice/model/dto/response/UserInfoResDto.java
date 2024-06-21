@@ -10,17 +10,20 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class UserInfoResponseDto {
+public class UserInfoResDto {
 
     private Occupation occupation;
     private CompanySize companySize;
     private Integer employmentDuration;
     private Integer individualIncome;
+    private Integer individualAssets;
     private Integer totalMarriedIncome;
+    private Integer totalMarriedAssets;
     private Integer childrenCount;
     private Boolean isForeign;
     private Boolean isFirstHouseBuyer;
     private Boolean isMarried;
-    private Boolean isNewlyMarried;
+    private Integer yearsOfMarriage;
     private Boolean hasOtherLoans;
+
 }

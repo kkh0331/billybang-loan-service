@@ -1,7 +1,7 @@
 package com.billybang.loanservice.filter;
 
-import com.billybang.loanservice.model.dto.response.UserInfoResponseDto;
-import com.billybang.loanservice.model.dto.response.UserResponseDto;
+import com.billybang.loanservice.model.dto.response.UserInfoResDto;
+import com.billybang.loanservice.model.dto.response.UserResDto;
 import com.billybang.loanservice.model.entity.loan.LoanUserCondition;
 import com.billybang.loanservice.model.type.Occupation;
 import com.billybang.loanservice.model.type.TargetOccupationType;
@@ -16,27 +16,28 @@ import java.util.List;
 @Component
 public class LoanUserFilter {
 
-    public List<TargetType> filterUserTargets(List<LoanUserCondition> userConditions, UserResponseDto userResponseDto){
+    public List<TargetType> filterUserTargets(List<LoanUserCondition> userConditions, UserResDto userResDto){
         List<TargetType> filteredUserTargets = new ArrayList<>();
         for(LoanUserCondition userCondition : userConditions){
-            if(isSatisfiedUserCondition(userCondition, userResponseDto)) {
+            if(isSatisfiedUserCondition(userCondition, userResDto)) {
                 filteredUserTargets.add(userCondition.getForTarget());
             }
         }
         return filteredUserTargets;
     }
 
-    private boolean isSatisfiedUserCondition(LoanUserCondition userCondition, UserResponseDto userResponseDto){
-        UserInfoResponseDto userInfo = userResponseDto.getUserInfo();
-        return LoanFilter.isSatisfiedForTarget(userCondition.getForTarget(), userResponseDto)
+    private boolean isSatisfiedUserCondition(LoanUserCondition userCondition, UserResDto userResDto){
+        UserInfoResDto userInfo = userResDto.getUserInfo();
+        return LoanFilter.isSatisfiedForTarget(userCondition.getForTarget(), userResDto)
                 && isSatisfiedAllowedForAnotherLoan(userCondition.getAllowedForAnotherLoan(), userInfo.getHasOtherLoans())
                 && isSatisfiedAllowedForForeigner(userCondition.getAllowedForForeigner(), userInfo.getIsForeign())
                 && isSatisfiedForFirstHomeBuyer(userCondition.getForFirstHomeBuyer(), userInfo.getIsFirstHouseBuyer())
                 && isSatisfiedTargetOccupation(userCondition.getTargetOccupation(), userInfo.getOccupation())
                 && isSatisfiedEmploymentDuration(userCondition.getMinEmploymentDuration(), userCondition.getMaxEmploymentDuration(), userInfo.getEmploymentDuration())
-                && isSatisfiedAge(userCondition.getMinAge(), userCondition.getMaxAge(), userResponseDto.getBirthDate())
+                && isSatisfiedAge(userCondition.getMinAge(), userCondition.getMaxAge(), userResDto.getBirthDate())
                 && isSatisfiedIndividualIncome(userCondition.getMinIndividualIncome(), userCondition.getMaxIndividualIncome(), userInfo.getIndividualIncome())
-                && isSatisfiedMarriedTotalIncome(userCondition.getMaxMarriedTotalIncome(), userCondition.getMaxMarriedTotalIncome());
+                && isSatisfiedMarriedTotalIncome(userCondition.getMaxMarriedTotalIncome(), userInfo.getTotalMarriedIncome(), userInfo.getIsMarried())
+                && isSatisfiedMarriedTotalAssets(userCondition.getMaxMarriedTotalAssets(), userInfo.getTotalMarriedAssets(), userInfo.getIsMarried());
     }
 
     private boolean isSatisfiedAllowedForAnotherLoan(Boolean allowedForAnotherLoan, Boolean hasOtherLoans){
@@ -67,7 +68,7 @@ public class LoanUserFilter {
 
     private boolean isSatisfiedEmploymentDuration(Integer minEmploymentDuration, Integer maxEmploymentDuration, Integer employmentDuration){
         if(minEmploymentDuration == null && maxEmploymentDuration == null) return true;
-        if(employmentDuration == null) return false;
+        if(employmentDuration == null) return true;
         boolean isSatisfiedMinEmploymentDuration = (minEmploymentDuration == null || minEmploymentDuration <= employmentDuration);
         boolean isSatisfiedMaxEmploymentDuration = (maxEmploymentDuration == null || employmentDuration <= maxEmploymentDuration);
         return isSatisfiedMinEmploymentDuration && isSatisfiedMaxEmploymentDuration;
@@ -82,15 +83,22 @@ public class LoanUserFilter {
 
     private boolean isSatisfiedIndividualIncome(Integer minIndividualIncome, Integer maxIndividualIncome, Integer individualIncome){
         if(minIndividualIncome == null && maxIndividualIncome == null) return true;
-        if(individualIncome == null) return false;
+        if(individualIncome == null) return true;
         boolean isSatisfiedMinIndividualIncome = (minIndividualIncome == null || minIndividualIncome <= individualIncome);
         boolean isSatisfiedMaxIndividualIncome = (maxIndividualIncome == null || individualIncome <= maxIndividualIncome);
         return isSatisfiedMinIndividualIncome && isSatisfiedMaxIndividualIncome;
     }
 
-    private boolean isSatisfiedMarriedTotalIncome(Integer maxMarriedTotalIncome, Integer totalMarriedIncome){
-        if(maxMarriedTotalIncome == null) return true;
+    private boolean isSatisfiedMarriedTotalIncome(Integer maxMarriedTotalIncome, Integer totalMarriedIncome, Boolean isMarried){
+        if(isMarried == null || !isMarried) return true;
+        if(maxMarriedTotalIncome == null || totalMarriedIncome == null) return true;
         return totalMarriedIncome <= maxMarriedTotalIncome;
+    }
+
+    private boolean isSatisfiedMarriedTotalAssets(Integer maxMarriedTotalAssets, Integer totalMarriedAssets, Boolean isMarried){
+        if(isMarried == null || !isMarried) return true;
+        if(maxMarriedTotalAssets == null || totalMarriedAssets == null) return true;
+        return totalMarriedAssets <= maxMarriedTotalAssets;
     }
 
 }

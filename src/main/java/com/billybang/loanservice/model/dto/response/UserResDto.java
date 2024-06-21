@@ -11,13 +11,13 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class UserResponseDto {
+public class UserResDto {
 
     private Long userId;
     private String email;
     private LocalDate birthDate;
     private String nickname;
-    private UserInfoResponseDto userInfo;
+    private UserInfoResDto userInfo;
     private UserStatus userStatus;
 
 }

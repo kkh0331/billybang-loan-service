@@ -1,6 +1,6 @@
 package com.billybang.loanservice.model.mapper;
 
-import com.billybang.loanservice.model.dto.response.UserInfoResponseDto;
+import com.billybang.loanservice.model.dto.response.UserInfoResDto;
 import com.billybang.loanservice.model.type.CompanySize;
 import com.billybang.loanservice.model.type.Occupation;
 import com.billybang.loanservice.utils.DateUtil;
@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Slf4j
 public class UserInfoMapper {
 
-    public UserInfoResponseDto getAvgDataByAge(LocalDate birthDate){
+    public UserInfoResDto getAvgDataByAge(LocalDate birthDate){
         // TODO 나이에 20대, 30대, 40대, 50대, 그 외 평균 데이터 생성
         // TODO 일단은 20대 평균데이터를 넣자
         int age = DateUtil.calcAge(birthDate);
@@ -23,8 +23,8 @@ public class UserInfoMapper {
 //        return createAvg20();
     }
 
-    private UserInfoResponseDto getAvgData20(){
-        return UserInfoResponseDto.builder()
+    private UserInfoResDto getAvgData20(){
+        return UserInfoResDto.builder()
                 .occupation(Occupation.GENERAL)
                 .companySize(CompanySize.INTERMEDIATE)
                 .employmentDuration(6)
@@ -34,7 +34,7 @@ public class UserInfoMapper {
                 .isForeign(false)
                 .isFirstHouseBuyer(true)
                 .isMarried(false)
-                .isNewlyMarried(false)
+                .yearsOfMarriage(null)
                 .hasOtherLoans(false)
                 .build();
     }
