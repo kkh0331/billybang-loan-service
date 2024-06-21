@@ -30,6 +30,7 @@ public class StarService {
     private final StarredLoanRepository starredLoanRepository;
     private final UserServiceClient userServiceClient;
     private final LoanMapper loanMapper;
+    private final LoanCategoryMapper loanCategoryMapper;
 
     @Transactional
     public void saveStarredLoan(Loan loan, Long userId) {
@@ -43,8 +44,11 @@ public class StarService {
     @Transactional
     public List<LoanCategoryDto> getLoansByUserId(Long userId) {
         List<StarredLoan> starredLoans = starredLoanRepository.findAllByUserId(userId);
-        List<Loan> loans = starredLoans.stream().map(StarredLoan::getLoan).toList();
-        return LoanCategoryMapper.loansToLoanCategoryDtos(loans, userId);
+        List<Loan> loans = starredLoans.stream()
+                .map(StarredLoan::getLoan)
+                .toList();
+        loans.forEach(loan -> loan.setIsStarred(true));
+        return loanCategoryMapper.loansToLoanCategoryDtos(loans);
     }
 
     @Transactional

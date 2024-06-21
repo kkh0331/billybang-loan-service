@@ -6,6 +6,7 @@ import com.billybang.loanservice.client.UserServiceClient;
 import com.billybang.loanservice.exception.common.BError;
 import com.billybang.loanservice.exception.common.CommonException;
 import com.billybang.loanservice.model.dto.request.GetLoansReqDto;
+import com.billybang.loanservice.model.entity.star.StarredLoan;
 import com.billybang.loanservice.model.mapper.LoanMapper;
 import com.billybang.loanservice.model.mapper.UserMapper;
 import com.billybang.loanservice.model.dto.response.*;
@@ -24,10 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -41,6 +39,7 @@ public class LoanService {
     private final LoanFilter loanFilter;
     private final UserMapper userMapper;
     private final LoanMapper loanMapper;
+    private final LoanCategoryMapper loanCategoryMapper;
 
     @Transactional
     public LoanResDto getLoans(PropertyResDto propertyInfo, UserResDto userInfo, GetLoansReqDto loansReqDto) {
@@ -52,7 +51,11 @@ public class LoanService {
                 .filter(loan -> loanFilter.filterByTermAndPrice(loan, loansReqDto))
                 .sorted(Comparator.comparing(Loan::getMinInterestRate))
                 .toList();
-        List<LoanCategoryDto> loanCategoryDtos = LoanCategoryMapper.loansToLoanCategoryDtos(loans, userInfo.getUserId());
+
+        List<Long> starredLoanIds = getStarredLoanIds(userInfo.getUserId());
+        loans.forEach(loan -> loan.setIsStarred(starredLoanIds.contains(loan.getId())));
+
+        List<LoanCategoryDto> loanCategoryDtos = loanCategoryMapper.loansToLoanCategoryDtos(loans);
         return LoanResDto.builder()
                 .buildingName(propertyInfo.getArticleName())
                 .sumCount(loans.size())
@@ -108,6 +111,14 @@ public class LoanService {
     public PropertyResDto getPropertyInfo(Long propertyId){
         ApiResult<PropertyResDto> propertyResponseDto = propertyServiceClient.getPropertyInfo(propertyId);
         return propertyResponseDto.getResponse();
+    }
+
+    private List<Long> getStarredLoanIds(Long userId){
+        if(userId == null) return new ArrayList<>();
+        return starredLoanRepository.findAllByUserId(userId)
+                .stream()
+                .map(starredLoan -> starredLoan.getLoan().getId())
+                .toList();
     }
 
     private LoanType toLoanType(TradeType tradeType){

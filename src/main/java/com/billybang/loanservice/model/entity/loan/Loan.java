@@ -11,10 +11,7 @@ import com.billybang.loanservice.model.type.InterestRateType;
 import com.billybang.loanservice.model.type.LoanType;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -69,8 +66,8 @@ public class Loan {
     @OneToMany(mappedBy = "loan")
     private List<LoanPreferredItem> loanPreferredItems;
 
-    @OneToMany(mappedBy = "loan")
-    private List<StarredLoan> starredLoans;
+    @Setter
+    private Boolean isStarred;
 
     @JsonManagedReference
     @OneToMany(mappedBy = "loan")
@@ -79,21 +76,6 @@ public class Loan {
     @JsonManagedReference
     @OneToMany(mappedBy = "loan")
     private List<LoanPropertyCondition> propertyConditions;
-
-    public LoanDto toLoanDto(Long userId){
-        return LoanDto.builder()
-                .loanId(id)
-                .providerName(provider.getProviderName())
-                .providerImgUrl(provider.getImgUrl())
-                .productName(productName)
-                .productDesc(productDesc)
-                .loanLimit(loanLimit)
-                .ltv(ltv)
-                .minInterestRate(minInterestRate)
-                .maxInterestRate(maxInterestRate)
-                .isStarred(isStarred(userId))
-                .build();
-    }
 
     // todo 추후 리팩토링
     public LoanDetailResDto toLoanDetailResDto(UserResDto userInfo){
@@ -132,8 +114,9 @@ public class Loan {
     }
 
     private boolean isStarred(Long userId){
-        return starredLoans.stream()
-                .map(StarredLoan::getUserId).toList().contains(userId);
+//        return starredLoans.stream()
+//                .map(StarredLoan::getUserId).toList().contains(userId);
+        return false;
     }
 
 }

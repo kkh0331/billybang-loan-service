@@ -19,5 +19,10 @@ public interface LoanMapper {
     @Mapping(source = "provider.imgUrl", target = "providerImgUrl")
     LoanSimpleResDto toLoanSimpleResDto(Loan loan);
 
+    @Mapping(source = "id", target = "loanId")
+    @Mapping(source = "provider.providerName", target = "providerName")
+    @Mapping(source = "provider.imgUrl", target = "providerImgUrl")
+    LoanDto toLoanDto(Loan loan);
+
 }
 
