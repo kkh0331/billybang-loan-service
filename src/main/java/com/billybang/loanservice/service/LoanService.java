@@ -81,13 +81,12 @@ public class LoanService {
     }
 
     public UserResDto getUserInfo() {
-        try{
+        ApiResult<ValidateTokenResDto> validateToken = userServiceClient.validateToken();
+        if(validateToken.getResponse().getIsValid()){
             ApiResult<UserResDto> response = userServiceClient.getUserInfo();
             return processResponse(response);
-        } catch(FeignException e){
-            log.error("error : {}", e.toString());
-            return userMapper.getAvgData(UserStatus.UNAUTHORIZED);
         }
+        return userMapper.getAvgData(UserStatus.UNAUTHORIZED);
     }
 
     private UserResDto processResponse(ApiResult<UserResDto> response){
@@ -103,13 +102,8 @@ public class LoanService {
     }
 
     public PropertyResDto getPropertyInfo(Long propertyId){
-        try{
-            ApiResult<PropertyResDto> propertyResponseDto = propertyServiceClient.getPropertyInfo(propertyId);
-            return propertyResponseDto.getResponse();
-        } catch(FeignException e){
-            log.error("error : {}", e.toString());
-            throw new CommonException(BError.NOT_EXIST, "Property");
-        }
+        ApiResult<PropertyResDto> propertyResponseDto = propertyServiceClient.getPropertyInfo(propertyId);
+        return propertyResponseDto.getResponse();
     }
 
     private LoanType toLoanType(TradeType tradeType){

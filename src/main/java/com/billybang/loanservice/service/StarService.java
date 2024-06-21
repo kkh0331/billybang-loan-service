@@ -4,6 +4,7 @@ import com.billybang.loanservice.api.ApiResult;
 import com.billybang.loanservice.client.UserServiceClient;
 import com.billybang.loanservice.exception.common.BError;
 import com.billybang.loanservice.exception.common.CommonException;
+import com.billybang.loanservice.model.dto.response.ValidateTokenResDto;
 import com.billybang.loanservice.model.mapper.LoanCategoryMapper;
 import com.billybang.loanservice.model.dto.loan.LoanCategoryDto;
 import com.billybang.loanservice.model.dto.response.LoanSimpleResDto;
@@ -57,14 +58,10 @@ public class StarService {
     }
 
     public Long getUserId() {
-        try{
-            ApiResult<UserResDto> response = userServiceClient.getUserInfo();
-            if(response.isSuccess()){
-                return response.getResponse().getUserId();
-            }
-        } catch(FeignException e){
-            log.error("error : {}", e.toString());
+        ApiResult<UserResDto> response = userServiceClient.getUserInfo();
+        if(response.isSuccess()){
+            return response.getResponse().getUserId();
         }
-        throw new CommonException(BError.NOT_EXIST, "User");
+        throw new CommonException(BError.FAIL, "get user id");
     }
 }
