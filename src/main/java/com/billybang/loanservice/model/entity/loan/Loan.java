@@ -64,7 +64,7 @@ public class Loan {
     @Enumerated(EnumType.STRING)
     private InterestRateType interestRateType;
 
-    private String billybangId; // 데이터 저장 후 삭제
+    private String billybangId;
 
     @OneToMany(mappedBy = "loan")
     private List<LoanPreferredItem> loanPreferredItems;
@@ -81,7 +81,6 @@ public class Loan {
     private List<LoanPropertyCondition> propertyConditions;
 
     public LoanDto toLoanDto(Long userId){
-
         return LoanDto.builder()
                 .loanId(id)
                 .providerName(provider.getProviderName())
@@ -93,19 +92,6 @@ public class Loan {
                 .minInterestRate(minInterestRate)
                 .maxInterestRate(maxInterestRate)
                 .isStarred(isStarred(userId))
-                .build();
-    }
-
-    public LoanSimpleResDto toLoanSimpleResDto(){
-        return LoanSimpleResDto.builder()
-                .loanId(id)
-                .providerName(provider.getProviderName())
-                .providerImgUrl(provider.getImgUrl())
-                .productName(productName)
-                .loanLimit(loanLimit)
-                .ltv(ltv)
-                .minInterestRate(minInterestRate)
-                .maxInterestRate(maxInterestRate)
                 .build();
     }
 

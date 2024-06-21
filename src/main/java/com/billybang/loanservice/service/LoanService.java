@@ -6,6 +6,7 @@ import com.billybang.loanservice.client.UserServiceClient;
 import com.billybang.loanservice.exception.common.BError;
 import com.billybang.loanservice.exception.common.CommonException;
 import com.billybang.loanservice.model.dto.request.GetLoansReqDto;
+import com.billybang.loanservice.model.mapper.LoanMapper;
 import com.billybang.loanservice.model.mapper.UserMapper;
 import com.billybang.loanservice.model.dto.response.*;
 import com.billybang.loanservice.filter.LoanFilter;
@@ -16,6 +17,7 @@ import com.billybang.loanservice.model.type.LoanType;
 import com.billybang.loanservice.model.type.TradeType;
 import com.billybang.loanservice.model.type.UserStatus;
 import com.billybang.loanservice.repository.loan.LoanRepository;
+import com.billybang.loanservice.repository.star.StarredLoanRepository;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,10 +35,12 @@ import java.util.Optional;
 public class LoanService {
 
     private final LoanRepository loanRepository;
+    private final StarredLoanRepository starredLoanRepository;
     private final UserServiceClient userServiceClient;
+    private final PropertyServiceClient propertyServiceClient;
     private final LoanFilter loanFilter;
     private final UserMapper userMapper;
-    private final PropertyServiceClient propertyServiceClient;
+    private final LoanMapper loanMapper;
 
     @Transactional
     public LoanResDto getLoans(PropertyResDto propertyInfo, UserResDto userInfo, GetLoansReqDto loansReqDto) {
@@ -64,7 +68,7 @@ public class LoanService {
                 .stream().filter(loan -> loanFilter.filterByPropertyAndUser(loan, propertyInfo, userInfo))
                 .min(Comparator.comparing(Loan::getMinInterestRate));
         if(resultLoan.isEmpty()) throw new CommonException(BError.NOT_EXIST, "LoansByLoanType");
-        return resultLoan.get().toLoanSimpleResDto();
+        return loanMapper.toLoanSimpleResDto(resultLoan.get());
     }
 
     @Transactional

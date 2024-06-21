@@ -11,6 +11,7 @@ import com.billybang.loanservice.model.dto.response.LoanSimpleResDto;
 import com.billybang.loanservice.model.dto.response.UserResDto;
 import com.billybang.loanservice.model.entity.loan.Loan;
 import com.billybang.loanservice.model.entity.star.StarredLoan;
+import com.billybang.loanservice.model.mapper.LoanMapper;
 import com.billybang.loanservice.repository.star.StarredLoanRepository;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class StarService {
 
     private final StarredLoanRepository starredLoanRepository;
     private final UserServiceClient userServiceClient;
+    private final LoanMapper loanMapper;
 
     @Transactional
     public void saveStarredLoan(Loan loan, Long userId) {
@@ -49,7 +51,7 @@ public class StarService {
     public List<LoanSimpleResDto> getLoansSimpleByUserId(Long userId) {
         List<StarredLoan> starredLoans = starredLoanRepository.findAllByUserId(userId);
         List<Loan> loans = starredLoans.stream().map(StarredLoan::getLoan).toList();
-        return loans.stream().map(Loan::toLoanSimpleResDto).toList();
+        return loans.stream().map(loanMapper::toLoanSimpleResDto).toList();
     }
 
     @Transactional
