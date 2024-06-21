@@ -1,5 +1,6 @@
 package com.billybang.loanservice.filter;
 
+import com.billybang.loanservice.model.dto.request.GetLoansReqDto;
 import com.billybang.loanservice.model.dto.response.PropertyResponseDto;
 import com.billybang.loanservice.model.dto.response.UserResponseDto;
 import com.billybang.loanservice.model.entity.loan.Loan;
@@ -42,6 +43,27 @@ public class LoanFilter {
             case YOUTH -> 19 <= age && age <= 34;
             case DEFAULT -> true;
         };
+    }
+
+    public boolean filterByTermAndPrice(Loan loan, GetLoansReqDto loansReqDto){
+        return filterByMinTerm(loansReqDto.getMinTerm(), loan.getMaxTerm())
+                && filterByMaxTerm(loansReqDto.getMaxTerm(), loan.getMinTerm())
+                && filterByPrice(loansReqDto.getMinPrice(), loan.getLoanLimit());
+    }
+
+    private boolean filterByMinTerm(Integer inputMinTerm, Integer loanMaxTerm){
+        if(inputMinTerm == null) return true;
+        return inputMinTerm <= loanMaxTerm;
+    }
+
+    private boolean filterByMaxTerm(Integer inputMaxTerm, Integer loanMinTerm){
+        if(inputMaxTerm == null || loanMinTerm == null) return true;
+        return loanMinTerm <= inputMaxTerm;
+    }
+
+    private boolean filterByPrice(Integer inputMinPrice, Integer loanLimit){
+        if(inputMinPrice == null) return true;
+        return loanLimit != null && loanLimit >= inputMinPrice;
     }
 
 }

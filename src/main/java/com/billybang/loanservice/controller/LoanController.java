@@ -3,6 +3,7 @@ package com.billybang.loanservice.controller;
 import com.billybang.loanservice.api.ApiResult;
 import com.billybang.loanservice.api.ApiUtils;
 import com.billybang.loanservice.api.LoanApi;
+import com.billybang.loanservice.model.dto.request.GetLoansReqDto;
 import com.billybang.loanservice.model.dto.response.*;
 import com.billybang.loanservice.service.LoanService;
 import lombok.RequiredArgsConstructor;
@@ -18,11 +19,12 @@ public class LoanController implements LoanApi {
     private final LoanService loanService;
 
     @Override
-    public ResponseEntity<ApiResult<LoanResDto>> getLoans(Long propertyId) {
+    public ResponseEntity<ApiResult<LoanResDto>> getLoans(GetLoansReqDto loansReqDto) {
+        log.info("getLoansReqDto: {}", loansReqDto);
         UserResponseDto userInfo = loanService.getUserInfo();
         log.info("userInfo : {}", userInfo);
-        PropertyResponseDto propertyInfo = loanService.getPropertyInfo(propertyId);
-        LoanResDto loans = loanService.getLoans(propertyInfo, userInfo);
+        PropertyResponseDto propertyInfo = loanService.getPropertyInfo(loansReqDto.getPropertyId());
+        LoanResDto loans = loanService.getLoans(propertyInfo, userInfo, loansReqDto);
         return ResponseEntity.ok(ApiUtils.success(loans));
     }
 

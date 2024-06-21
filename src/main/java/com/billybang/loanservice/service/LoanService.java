@@ -5,6 +5,7 @@ import com.billybang.loanservice.client.PropertyServiceClient;
 import com.billybang.loanservice.client.UserServiceClient;
 import com.billybang.loanservice.exception.common.BError;
 import com.billybang.loanservice.exception.common.CommonException;
+import com.billybang.loanservice.model.dto.request.GetLoansReqDto;
 import com.billybang.loanservice.model.mapper.UserMapper;
 import com.billybang.loanservice.model.dto.response.*;
 import com.billybang.loanservice.filter.LoanFilter;
@@ -38,11 +39,13 @@ public class LoanService {
     private final PropertyServiceClient propertyServiceClient;
 
     @Transactional
-    public LoanResDto getLoans(PropertyResponseDto propertyInfo, UserResponseDto userInfo) {
+    public LoanResDto getLoans(PropertyResponseDto propertyInfo, UserResponseDto userInfo, GetLoansReqDto loansReqDto) {
         LoanType loanType = toLoanType(propertyInfo.getTradeType());
         List<LoanType> loanTypes = Arrays.asList(loanType, LoanType.PERSONAL);
         List<Loan> loans = loanRepository.findAllByLoanTypeIn(loanTypes)
-                .stream().filter(loan -> loanFilter.filterByPropertyAndUser(loan, propertyInfo, userInfo))
+                .stream()
+                .filter(loan -> loanFilter.filterByPropertyAndUser(loan, propertyInfo, userInfo))
+                .filter(loan -> loanFilter.filterByTermAndPrice(loan, loansReqDto))
                 .sorted(Comparator.comparing(Loan::getMinInterestRate))
                 .toList();
         List<LoanCategoryDto> loanCategoryDtos = LoanCategoryMapper.loansToLoanCategoryDtos(loans, userInfo.getUserId());
