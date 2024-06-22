@@ -1,9 +1,6 @@
 package com.billybang.loanservice.model.entity.loan;
 
-import com.billybang.loanservice.model.dto.response.LoanDetailResDto;
-import com.billybang.loanservice.model.dto.response.UserResDto;
 import com.billybang.loanservice.model.entity.provider.Provider;
-import com.billybang.loanservice.filter.LoanPreferredItemFilter;
 import com.billybang.loanservice.model.type.InterestRateType;
 import com.billybang.loanservice.model.type.LoanType;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -11,7 +8,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -43,8 +39,6 @@ public class Loan {
 
     private String productDesc;
 
-//    private Integer loanLimit;
-
     private String guaranteeAgency;
 
     private Integer minTerm;
@@ -58,10 +52,8 @@ public class Loan {
     @Enumerated(EnumType.STRING)
     private InterestRateType interestRateType;
 
-//    private String billybangId;
-
     @JsonManagedReference
-    @OneToMany(mappedBy = "loan")
+    @OneToMany(mappedBy = "loan", fetch = FetchType.EAGER)
     private List<LoanLimit> loanLimits;
 
     @Setter
@@ -75,47 +67,5 @@ public class Loan {
     @JsonManagedReference
     @OneToMany(mappedBy = "loan")
     private List<LoanPropertyCondition> propertyConditions;
-
-    // todo 추후 리팩토링
-    public LoanDetailResDto toLoanDetailResDto(UserResDto userInfo){
-        log.info("userInfo: {}", userInfo);
-        Integer maxLoanLimit = null;
-        List<String> loanPreferredItemNames = new ArrayList<>();
-
-        for(LoanLimit loanLimit : loanLimits) {
-            if(LoanPreferredItemFilter.filterByUserInfo(loanLimit, userInfo)) {
-                loanPreferredItemNames.add(loanLimit.getForTarget().getName());
-                Integer itemLoanLimit = loanLimit.getLoanLimit();
-                if(itemLoanLimit != null && itemLoanLimit > maxLoanLimit) {
-                    maxLoanLimit = loanLimit.getLoanLimit();
-                }
-            }
-        }
-
-        return LoanDetailResDto.builder()
-                .providerId(provider.getId())
-                .providerName(provider.getProviderName())
-                .providerImgUrl(provider.getImgUrl())
-                .productName(productName)
-                .productDesc(productDesc)
-                .guaranteeAgencyName(guaranteeAgency)
-                .loanType(loanType.getName())
-                .loanLimit(maxLoanLimit)
-                .ltv(ltv)
-                .minTerm(minTerm)
-                .maxTerm(maxTerm)
-                .minInterestRate(minInterestRate)
-                .maxInterestRate(maxInterestRate)
-                .interestRateType(interestRateType.getName())
-                .preferentialItems(loanPreferredItemNames)
-                .isStarred(isStarred(userInfo.getUserId()))
-                .build();
-    }
-
-    private boolean isStarred(Long userId){
-//        return starredLoans.stream()
-//                .map(StarredLoan::getUserId).toList().contains(userId);
-        return false;
-    }
 
 }

@@ -4,6 +4,7 @@ import com.billybang.loanservice.model.dto.request.GetLoansReqDto;
 import com.billybang.loanservice.model.dto.response.PropertyResDto;
 import com.billybang.loanservice.model.dto.response.UserResDto;
 import com.billybang.loanservice.model.entity.loan.Loan;
+import com.billybang.loanservice.model.entity.loan.LoanUserCondition;
 import com.billybang.loanservice.model.mapper.LoanQualifier;
 import com.billybang.loanservice.model.type.TargetType;
 import com.billybang.loanservice.utils.DateUtil;
@@ -33,6 +34,14 @@ public class LoanFilter {
         if(isEmptyUserConditions) return !filteredPropertyTargets.isEmpty();
 
         return filteredPropertyTargets.stream().anyMatch(filteredUserTargets::contains);
+    }
+
+    public List<TargetType> getUnSatisfiedTargetTypesByUser(Loan loan, UserResDto userInfo){
+        List<TargetType> filteredUserTargets = loanUserFilter.filterUserTargets(loan.getUserConditions(), userInfo);
+        log.info("filteredUserTargets : {}", filteredUserTargets);
+        return loan.getUserConditions().stream().map(LoanUserCondition::getForTarget)
+                .filter(targetType -> !filteredUserTargets.contains(targetType))
+                .toList();
     }
 
     public static boolean isSatisfiedForTarget(TargetType targetType, UserResDto userInfo){

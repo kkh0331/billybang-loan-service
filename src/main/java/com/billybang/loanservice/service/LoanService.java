@@ -6,6 +6,7 @@ import com.billybang.loanservice.client.UserServiceClient;
 import com.billybang.loanservice.exception.common.BError;
 import com.billybang.loanservice.exception.common.CommonException;
 import com.billybang.loanservice.model.dto.request.GetLoansReqDto;
+import com.billybang.loanservice.model.entity.loan.LoanLimit;
 import com.billybang.loanservice.model.entity.star.StarredLoan;
 import com.billybang.loanservice.model.mapper.LoanMapper;
 import com.billybang.loanservice.model.mapper.UserMapper;
@@ -15,6 +16,7 @@ import com.billybang.loanservice.model.mapper.LoanCategoryMapper;
 import com.billybang.loanservice.model.dto.loan.LoanCategoryDto;
 import com.billybang.loanservice.model.entity.loan.Loan;
 import com.billybang.loanservice.model.type.LoanType;
+import com.billybang.loanservice.model.type.TargetType;
 import com.billybang.loanservice.model.type.TradeType;
 import com.billybang.loanservice.model.type.UserStatus;
 import com.billybang.loanservice.repository.loan.LoanRepository;
@@ -75,9 +77,18 @@ public class LoanService {
 
     @Transactional
     public LoanDetailResDto getLoanDetail(Long loanId, UserResDto userInfo) {
-        Loan resultLoan = loanRepository.findById(loanId)
+        Loan loan = loanRepository.findById(loanId)
             .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "Loan"));
-        return resultLoan.toLoanDetailResDto(userInfo);
+
+        List<TargetType> unSatisfiedTargetTypesByUser = loanFilter.getUnSatisfiedTargetTypesByUser(loan, userInfo);
+        List<LoanLimit> possibleLoanLimits = loan.getLoanLimits().stream()
+                .filter(loanLimit -> !unSatisfiedTargetTypesByUser.contains(loanLimit.getForTarget()))
+                .toList();
+
+        Optional<StarredLoan> starredLoan = starredLoanRepository.findByLoanIdAndUserId(loanId, userInfo.getUserId());
+        if(starredLoan.isPresent()) loan.setIsStarred(true);
+
+        return loanMapper.toLoanDetailResDto(loan, possibleLoanLimits);
     }
 
     @Transactional

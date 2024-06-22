@@ -20,7 +20,7 @@ public class LoanLimit {
     @Column(name = "loan_limit_id")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "loan_id")
     @JsonBackReference
     private Loan loan;
