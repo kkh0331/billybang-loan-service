@@ -45,7 +45,7 @@
     <!-- local-cloud Profile 에서의 로그 설정 -->
     <springProfile name="local-cloud">
         <!-- 전체적인 로그는 INFO 레벨 부터 출력 -->
-        <root level="INFO">
+        <root level="DEBUG">
             <!-- CONSOLE 로그 Appender 를 로그 Appender 로 등록 -->
             <appender-ref ref="CONSOLE" />
         </root>
