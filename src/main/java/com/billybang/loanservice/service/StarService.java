@@ -4,12 +4,14 @@ import com.billybang.loanservice.api.ApiResult;
 import com.billybang.loanservice.client.UserServiceClient;
 import com.billybang.loanservice.exception.common.BError;
 import com.billybang.loanservice.exception.common.CommonException;
+import com.billybang.loanservice.model.dto.response.ValidateTokenResDto;
 import com.billybang.loanservice.model.mapper.LoanCategoryMapper;
 import com.billybang.loanservice.model.dto.loan.LoanCategoryDto;
 import com.billybang.loanservice.model.dto.response.LoanSimpleResDto;
 import com.billybang.loanservice.model.dto.response.UserResDto;
 import com.billybang.loanservice.model.entity.loan.Loan;
 import com.billybang.loanservice.model.entity.star.StarredLoan;
+import com.billybang.loanservice.model.mapper.LoanMapper;
 import com.billybang.loanservice.repository.star.StarredLoanRepository;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,8 @@ public class StarService {
 
     private final StarredLoanRepository starredLoanRepository;
     private final UserServiceClient userServiceClient;
+    private final LoanMapper loanMapper;
+    private final LoanCategoryMapper loanCategoryMapper;
 
     @Transactional
     public void saveStarredLoan(Loan loan, Long userId) {
@@ -40,15 +44,18 @@ public class StarService {
     @Transactional
     public List<LoanCategoryDto> getLoansByUserId(Long userId) {
         List<StarredLoan> starredLoans = starredLoanRepository.findAllByUserId(userId);
-        List<Loan> loans = starredLoans.stream().map(StarredLoan::getLoan).toList();
-        return LoanCategoryMapper.loansToLoanCategoryDtos(loans, userId);
+        List<Loan> loans = starredLoans.stream()
+                .map(StarredLoan::getLoan)
+                .toList();
+        loans.forEach(loan -> loan.setIsStarred(true));
+        return loanCategoryMapper.loansToLoanCategoryDtos(loans);
     }
 
     @Transactional
     public List<LoanSimpleResDto> getLoansSimpleByUserId(Long userId) {
         List<StarredLoan> starredLoans = starredLoanRepository.findAllByUserId(userId);
         List<Loan> loans = starredLoans.stream().map(StarredLoan::getLoan).toList();
-        return loans.stream().map(Loan::toLoanSimpleResDto).toList();
+        return loans.stream().map(loanMapper::toLoanSimpleResDto).toList();
     }
 
     @Transactional
@@ -57,14 +64,10 @@ public class StarService {
     }
 
     public Long getUserId() {
-        try{
-            ApiResult<UserResDto> response = userServiceClient.getUserInfo();
-            if(response.isSuccess()){
-                return response.getResponse().getUserId();
-            }
-        } catch(FeignException e){
-            log.error("error : {}", e.toString());
+        ApiResult<UserResDto> response = userServiceClient.getUserInfo();
+        if(response.isSuccess()){
+            return response.getResponse().getUserId();
         }
-        throw new CommonException(BError.NOT_EXIST, "User");
+        throw new CommonException(BError.FAIL, "get user id");
     }
 }

@@ -1,9 +1,5 @@
 package com.billybang.loanservice.model.entity.provider;
 
-import com.billybang.loanservice.model.dto.provider.FinStatementDto;
-import com.billybang.loanservice.model.dto.provider.ProviderOverviewDto;
-import com.billybang.loanservice.utils.DateUtil;
-import com.billybang.loanservice.utils.NumberUtil;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -39,19 +35,5 @@ public class FinStatement {
     private Long totalCapital;
 
     private Long totalAssets;
-
-    public FinStatementDto toFinStatementDto(){
-        return FinStatementDto.builder()
-                .id(id)
-                .year(year)
-                .salesAmount(NumberUtil.convertToBillion(salesAmount))
-                .businessProfit(NumberUtil.convertToBillion(businessProfit))
-                .netProfit(NumberUtil.convertToBillion(netProfit))
-                .totalAssets(NumberUtil.convertToBillion(totalAssets))
-                .totalLiabilities(NumberUtil.convertToBillion(totalLiabilities))
-                .totalCapital(NumberUtil.convertToBillion(totalCapital))
-                .build();
-    }
-
 
 }

@@ -111,28 +111,28 @@ public class ExceptionAdvice {
 	}
 
 	@ExceptionHandler(FeignException.BadRequest.class)
-	public ResponseEntity<ApiResult<ErrorResponse>> handleFeignBadRequestException(FeignException.FeignClientException e) {
+	public ResponseEntity<ApiResult<ErrorResponse>> handleFeignBadRequestException(FeignException.BadRequest e) {
 		log.error("FeignException {}", e.getMessage());
 		final ErrorResponse response = ErrorResponse.of(e);
 		return ResponseEntity.badRequest().body(ApiUtils.error(response));
 	}
 
 	@ExceptionHandler(FeignException.Unauthorized.class)
-	public ResponseEntity<ApiResult<ErrorResponse>> handleFeignUnauthorizedException(FeignException.FeignClientException e) {
+	public ResponseEntity<ApiResult<ErrorResponse>> handleFeignUnauthorizedException(FeignException.Unauthorized e) {
 		log.error("FeignException {}", e.getMessage());
 		final ErrorResponse response = ErrorResponse.of(e);
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiUtils.error(response));
 	}
 
 	@ExceptionHandler(FeignException.Forbidden.class)
-	public ResponseEntity<ApiResult<ErrorResponse>> handleFeignForbiddenException(FeignException.FeignClientException e) {
+	public ResponseEntity<ApiResult<ErrorResponse>> handleFeignForbiddenException(FeignException.Forbidden e) {
 		log.error("FeignException {}", e.getMessage());
 		final ErrorResponse response = ErrorResponse.of(e);
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiUtils.error(response));
 	}
 
 	@ExceptionHandler(FeignException.InternalServerError.class)
-	public ResponseEntity<ApiResult<ErrorResponse>> handleFeignInternalServerException(FeignException.FeignClientException e) {
+	public ResponseEntity<ApiResult<ErrorResponse>> handleFeignInternalServerException(FeignException.InternalServerError e) {
 		log.error("FeignException {}", e.getMessage());
 		final ErrorResponse response = ErrorResponse.of(e);
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiUtils.error(response));
