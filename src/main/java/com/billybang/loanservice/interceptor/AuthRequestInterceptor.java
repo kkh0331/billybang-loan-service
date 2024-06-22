@@ -5,6 +5,7 @@ import com.billybang.loanservice.exception.common.CommonException;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -20,12 +21,19 @@ public class AuthRequestInterceptor implements RequestInterceptor {
             throw new CommonException(BError.NOT_VALID, "request");
         }
 
-        Cookie[] cookies = requestAttributes.getRequest().getCookies();
+        HttpServletRequest request = requestAttributes.getRequest();
+
+        Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             requestTemplate.header("Cookie", String.join("; ",
                     Arrays.stream(cookies)
                             .map(cookie -> "%s=%s".formatted(cookie.getName(), cookie.getValue()))
                             .toArray(String[]::new)));
+        }
+
+        String authorization = request.getHeader("Authorization");
+        if (authorization != null) {
+            requestTemplate.header("Authorization", authorization);
         }
     }
 }
