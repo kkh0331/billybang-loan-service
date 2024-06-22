@@ -1,6 +1,7 @@
 package com.billybang.loanservice.exception;
 
 import com.billybang.loanservice.exception.common.CommonException;
+import feign.FeignException;
 import jakarta.validation.ConstraintViolation;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -76,6 +77,18 @@ public class ErrorResponse {
 		}
 
 		return new ErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR);
+	}
+
+	public static ErrorResponse of(FeignException e) {
+		if (e.status() == 400) {
+			return new ErrorResponse(ErrorCode.BAD_REQUEST);
+		} else if (e.status() == 401) {
+			return new ErrorResponse(ErrorCode.UNAUTHORIZED);
+		} else if (e.status() == 403) {
+			return new ErrorResponse(ErrorCode.ACCESS_DENIED);
+		} else {
+			return new ErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	@Getter

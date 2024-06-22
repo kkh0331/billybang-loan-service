@@ -3,6 +3,7 @@ package com.billybang.loanservice.exception;
 import com.billybang.loanservice.api.ApiResult;
 import com.billybang.loanservice.api.ApiUtils;
 import com.billybang.loanservice.exception.common.CommonException;
+import feign.FeignException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -107,6 +108,34 @@ public class ExceptionAdvice {
 		log.error("CommonException {}", e.getMessage());
 		final ErrorResponse response = ErrorResponse.of(e);
 		return ResponseEntity.status(response.getStatus()).body(ApiUtils.error(response));
+	}
+
+	@ExceptionHandler(FeignException.BadRequest.class)
+	public ResponseEntity<ApiResult<ErrorResponse>> handleFeignBadRequestException(FeignException.FeignClientException e) {
+		log.error("FeignException {}", e.getMessage());
+		final ErrorResponse response = ErrorResponse.of(e);
+		return ResponseEntity.badRequest().body(ApiUtils.error(response));
+	}
+
+	@ExceptionHandler(FeignException.Unauthorized.class)
+	public ResponseEntity<ApiResult<ErrorResponse>> handleFeignUnauthorizedException(FeignException.FeignClientException e) {
+		log.error("FeignException {}", e.getMessage());
+		final ErrorResponse response = ErrorResponse.of(e);
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiUtils.error(response));
+	}
+
+	@ExceptionHandler(FeignException.Forbidden.class)
+	public ResponseEntity<ApiResult<ErrorResponse>> handleFeignForbiddenException(FeignException.FeignClientException e) {
+		log.error("FeignException {}", e.getMessage());
+		final ErrorResponse response = ErrorResponse.of(e);
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiUtils.error(response));
+	}
+
+	@ExceptionHandler(FeignException.InternalServerError.class)
+	public ResponseEntity<ApiResult<ErrorResponse>> handleFeignInternalServerException(FeignException.FeignClientException e) {
+		log.error("FeignException {}", e.getMessage());
+		final ErrorResponse response = ErrorResponse.of(e);
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ApiUtils.error(response));
 	}
 
 	@ExceptionHandler(Exception.class)

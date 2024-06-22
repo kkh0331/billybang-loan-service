@@ -2,6 +2,7 @@ package com.billybang.loanservice.client;
 
 import com.billybang.loanservice.api.ApiResult;
 import com.billybang.loanservice.model.dto.response.UserResDto;
+import com.billybang.loanservice.model.dto.response.ValidateTokenResponseDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -10,4 +11,7 @@ public interface UserServiceClient {
 
     @GetMapping("/user-info")
     ApiResult<UserResDto> getUserInfo();
+
+    @GetMapping("/validate-token")
+    ApiResult<ValidateTokenResponseDto> validateToken();
 }
