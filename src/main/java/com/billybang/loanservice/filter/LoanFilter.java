@@ -4,6 +4,7 @@ import com.billybang.loanservice.model.dto.request.GetLoansReqDto;
 import com.billybang.loanservice.model.dto.response.PropertyResDto;
 import com.billybang.loanservice.model.dto.response.UserResDto;
 import com.billybang.loanservice.model.entity.loan.Loan;
+import com.billybang.loanservice.model.mapper.LoanQualifier;
 import com.billybang.loanservice.model.type.TargetType;
 import com.billybang.loanservice.utils.DateUtil;
 import lombok.AllArgsConstructor;
@@ -19,6 +20,7 @@ public class LoanFilter {
 
     private final LoanPropertyFilter loanPropertyFilter;
     private final LoanUserFilter loanUserFilter;
+    private final LoanQualifier loanQualifier;
 
     public boolean filterByPropertyAndUser(Loan loan, PropertyResDto propertyInfo, UserResDto userInfo){
         List<TargetType> filteredPropertyTargets = loanPropertyFilter.filterPropertyTargets(loan.getPropertyConditions(), propertyInfo, userInfo);
@@ -37,18 +39,21 @@ public class LoanFilter {
         int age = DateUtil.calcAge(userInfo.getBirthDate());
         Integer yearsOfMarriage = userInfo.getUserInfo().getYearsOfMarriage();
         Integer childrenCount = userInfo.getUserInfo().getChildrenCount();
+        Boolean isFirstHome = userInfo.getUserInfo().getIsFirstHouseBuyer();
         return switch(targetType){
             case NEWLY_MARRIED -> yearsOfMarriage != null && yearsOfMarriage <= 7;
             case MULTIPLE_CHILDREN -> childrenCount != null && childrenCount >= 2;
             case YOUTH -> 19 <= age && age <= 34;
+            case FIRST_HOME -> isFirstHome != null && isFirstHome;
             case DEFAULT -> true;
         };
     }
 
     public boolean filterByTermAndPrice(Loan loan, GetLoansReqDto loansReqDto){
+        Integer maxLoanLimit = loanQualifier.maxLoanLimit(loan.getLoanLimits());
         return filterByMinTerm(loansReqDto.getMinTerm(), loan.getMaxTerm())
                 && filterByMaxTerm(loansReqDto.getMaxTerm(), loan.getMinTerm())
-                && filterByPrice(loansReqDto.getMinPrice(), loan.getLoanLimit());
+                && filterByPrice(loansReqDto.getMinPrice(), maxLoanLimit);
     }
 
     private boolean filterByMinTerm(Integer inputMinTerm, Integer loanMaxTerm){

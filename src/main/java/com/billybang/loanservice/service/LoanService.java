@@ -45,11 +45,10 @@ public class LoanService {
     public LoanResDto getLoans(PropertyResDto propertyInfo, UserResDto userInfo, GetLoansReqDto loansReqDto) {
         LoanType loanType = toLoanType(propertyInfo.getTradeType());
         List<LoanType> loanTypes = Arrays.asList(loanType, LoanType.PERSONAL);
-        List<Loan> loans = loanRepository.findAllByLoanTypeIn(loanTypes)
+        List<Loan> loans = loanRepository.findAllByLoanTypeInOrderByMinInterestRateAsc(loanTypes)
                 .stream()
                 .filter(loan -> loanFilter.filterByPropertyAndUser(loan, propertyInfo, userInfo))
                 .filter(loan -> loanFilter.filterByTermAndPrice(loan, loansReqDto))
-                .sorted(Comparator.comparing(Loan::getMinInterestRate))
                 .toList();
 
         List<Long> starredLoanIds = getStarredLoanIds(userInfo.getUserId());
@@ -67,9 +66,9 @@ public class LoanService {
     @Transactional
     public LoanSimpleResDto getLoanSimple(PropertyResDto propertyInfo, UserResDto userInfo) {
         LoanType loanType = toLoanType(propertyInfo.getTradeType());
-        Optional<Loan> resultLoan = loanRepository.findAllByLoanType(loanType)
+        Optional<Loan> resultLoan = loanRepository.findAllByLoanTypeOrderByMinInterestRateAsc(loanType)
                 .stream().filter(loan -> loanFilter.filterByPropertyAndUser(loan, propertyInfo, userInfo))
-                .min(Comparator.comparing(Loan::getMinInterestRate));
+                .findFirst();
         if(resultLoan.isEmpty()) throw new CommonException(BError.NOT_EXIST, "LoansByLoanType");
         return loanMapper.toLoanSimpleResDto(resultLoan.get());
     }
