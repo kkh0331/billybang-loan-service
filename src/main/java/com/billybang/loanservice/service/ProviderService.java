@@ -9,18 +9,17 @@ import com.billybang.loanservice.model.dto.provider.ProviderOverviewDto;
 import com.billybang.loanservice.model.entity.provider.FinIndicator;
 import com.billybang.loanservice.model.entity.provider.FinStatement;
 import com.billybang.loanservice.model.entity.provider.Provider;
-import com.billybang.loanservice.model.type.IndicatorType;
+import com.billybang.loanservice.model.mapper.ProviderMapper;
 import com.billybang.loanservice.model.type.IndicatorGradeType;
+import com.billybang.loanservice.model.type.IndicatorType;
 import com.billybang.loanservice.repository.provider.FinIndicatorRepository;
 import com.billybang.loanservice.repository.provider.FinStatementRepository;
 import com.billybang.loanservice.repository.provider.ProviderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -36,18 +35,23 @@ public class ProviderService {
     private final FinIndicatorRepository finIndicatorRepository;
     private final ProviderRepository providerRepository;
 
+    private final ProviderMapper providerMapper;
+
     @Transactional
     public ProviderOverviewDto getProviderOverview(Integer providerId) {
         Provider resultProvider = providerRepository.findById(providerId)
                 .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "Provider"));
         Optional<FinStatement> recentStatement = finStatementRepository.findTop1ByProviderIdOrderByYearDesc(providerId);
-        return resultProvider.toProviderOverviewDto(recentStatement);
+        Long salesAmount = recentStatement.map(FinStatement::getSalesAmount).orElse(null);
+        Long businessProfit = recentStatement.map(FinStatement::getBusinessProfit).orElse(null);
+        Long netProfit = recentStatement.map(FinStatement::getNetProfit).orElse(null);
+        return providerMapper.toProviderOverviewDto(resultProvider, salesAmount, businessProfit, netProfit);
     }
 
     @Transactional
     public List<FinStatementDto> getFinStatements(Integer providerId){
         List<FinStatement> finStatements = finStatementRepository.findTop3ByProviderIdOrderByYearDesc(providerId);
-        return finStatements.stream().map(FinStatement::toFinStatementDto).toList();
+        return finStatements.stream().map(providerMapper::toFinStatementDto).toList();
     }
 
     @Transactional

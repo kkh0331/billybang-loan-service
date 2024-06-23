@@ -7,7 +7,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ValidateTokenResponseDto {
+public class ValidateTokenResDto {
 
     private Boolean isValid;
 }

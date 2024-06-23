@@ -30,6 +30,8 @@ public class LoanDetailResDto {
 
     private Integer loanLimit;
 
+    private Integer userLoanLimit;
+
     private Integer ltv;
 
     private Integer minTerm;
@@ -43,6 +45,8 @@ public class LoanDetailResDto {
     private String interestRateType;
 
     private List<String> preferentialItems;
+
+    private String originUrl;
 
     private Boolean isStarred;
 
