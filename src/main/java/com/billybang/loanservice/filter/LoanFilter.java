@@ -1,6 +1,7 @@
 package com.billybang.loanservice.filter;
 
-import com.billybang.loanservice.model.dto.request.GetLoansReqDto;
+import com.billybang.loanservice.model.dto.property.PropertyInfoDto;
+import com.billybang.loanservice.model.dto.request.LoansReqDto;
 import com.billybang.loanservice.model.dto.response.PropertyResDto;
 import com.billybang.loanservice.model.dto.response.UserResDto;
 import com.billybang.loanservice.model.entity.loan.Loan;
@@ -24,7 +25,7 @@ public class LoanFilter {
     private final LoanUserFilter loanUserFilter;
     private final LoanQualifier loanQualifier;
 
-    public boolean filterByPropertyAndUser(Loan loan, PropertyResDto propertyInfo, UserResDto userInfo){
+    public boolean filterByPropertyAndUser(Loan loan, PropertyInfoDto propertyInfo, UserResDto userInfo){
         boolean isEmptyPropertyConditions = loan.getPropertyConditions().isEmpty();
         boolean isEmptyUserConditions = loan.getUserConditions().isEmpty();
         if(isEmptyPropertyConditions && isEmptyUserConditions) return true;
@@ -93,7 +94,7 @@ public class LoanFilter {
         }
     }
 
-    public boolean filterByTermAndPrice(Loan loan, GetLoansReqDto loansReqDto){
+    public boolean filterByTermAndPrice(Loan loan, LoansReqDto loansReqDto){
         Integer maxLoanLimit = loanQualifier.maxLoanLimit(loan.getLoanLimits());
         return filterByMinTerm(loansReqDto.getMinTerm(), loan.getMaxTerm())
                 && filterByMaxTerm(loansReqDto.getMaxTerm(), loan.getMinTerm())

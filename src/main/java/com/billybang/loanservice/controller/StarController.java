@@ -4,7 +4,7 @@ import com.billybang.loanservice.api.ApiResult;
 import com.billybang.loanservice.api.ApiUtils;
 import com.billybang.loanservice.api.StarApi;
 import com.billybang.loanservice.model.dto.loan.LoanCategoryDto;
-import com.billybang.loanservice.model.dto.request.SaveStarredLoanReqDto;
+import com.billybang.loanservice.model.dto.request.StarredLoanReqDto;
 import com.billybang.loanservice.model.dto.response.LoanSimpleResDto;
 import com.billybang.loanservice.model.entity.loan.Loan;
 import com.billybang.loanservice.service.LoanService;
@@ -25,8 +25,8 @@ public class StarController implements StarApi {
     private final LoanService loanService;
 
     @Override
-    public ResponseEntity<?> saveStarredLoan(SaveStarredLoanReqDto saveStarredLoanReqDto) {
-        Long loanId = saveStarredLoanReqDto.getLoanId();
+    public ResponseEntity<?> saveStarredLoan(StarredLoanReqDto starredLoanReqDto) {
+        Long loanId = starredLoanReqDto.getLoanId();
         Loan loan = loanService.getLoanByLoanId(loanId);
         Long userId = starService.getUserId();
         log.info("saveStarredLoan userId : {}", userId);
