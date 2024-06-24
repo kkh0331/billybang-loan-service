@@ -5,9 +5,11 @@ import com.billybang.loanservice.client.PropertyServiceClient;
 import com.billybang.loanservice.client.UserServiceClient;
 import com.billybang.loanservice.exception.common.BError;
 import com.billybang.loanservice.exception.common.CommonException;
+import com.billybang.loanservice.filter.TargetFilter;
 import com.billybang.loanservice.model.dto.request.LoansReqDto;
 import com.billybang.loanservice.model.dto.request.PropertyInfoReqDto;
 import com.billybang.loanservice.model.entity.loan.LoanLimit;
+import com.billybang.loanservice.model.entity.loan.LoanUserCondition;
 import com.billybang.loanservice.model.entity.star.StarredLoan;
 import com.billybang.loanservice.model.mapper.LoanMapper;
 import com.billybang.loanservice.model.mapper.UserMapper;
@@ -90,17 +92,24 @@ public class LoanService {
     }
 
     @Transactional
-    public LoanDetailResDto getLoanDetail(Long loanId, UserResDto userInfo) {
+    public LoanDetailResDto getLoanDetail(Long loanId, UserResDto userResDto) {
         Loan loan = loanRepository.findById(loanId)
             .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "Loan"));
 
-        List<TargetType> unSatisfiedTargetTypesByUser = loanFilter.getUnSatisfiedTargetTypesByUser(loan, userInfo);
-        List<LoanLimit> possibleLoanLimits = loan.getLoanLimits().stream()
-                .filter(loanLimit -> !unSatisfiedTargetTypesByUser.contains(loanLimit.getForTarget()))
-                .toList();
-
-        Optional<StarredLoan> starredLoan = starredLoanRepository.findByLoanIdAndUserId(loanId, userInfo.getUserId());
+        Optional<StarredLoan> starredLoan = starredLoanRepository.findByLoanIdAndUserId(loanId, userResDto.getUserId());
         if(starredLoan.isPresent()) loan.setIsStarred(true);
+
+        if(userResDto.getUserStatus() != UserStatus.NORMAL){
+            return loanMapper.toLoanDetailResDto(loan, null);
+        }
+
+        List<TargetType> initialTargets = loan.getUserConditions().stream().map(LoanUserCondition::getForTarget).toList();
+        List<TargetType> filteredTargets = loanFilter.filterTargetsByUser(loan, userResDto);
+
+        List<LoanLimit> possibleLoanLimits = loan.getLoanLimits().stream()
+                .filter(loanLimit -> TargetFilter.isSatisfiedForTarget(loanLimit.getForTarget(), userResDto)
+                        && loanFilter.isPossibleTarget(loanLimit.getForTarget(), initialTargets, filteredTargets))
+                .toList();
 
         return loanMapper.toLoanDetailResDto(loan, possibleLoanLimits);
     }

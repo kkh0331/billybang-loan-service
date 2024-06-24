@@ -13,9 +13,10 @@ public enum ErrorCode {
 	ENTITY_NOT_FOUND(400, "C003", "Entity Not Found"),
 	BAD_REQUEST(400, "C004", "Bad Request"),
 	UNAUTHORIZED(401, "C005", "Unauthorized"),
-	ACCESS_DENIED(403, "C006", "Access Denied"),
-	METHOD_NOT_ALLOWED(405, "C007", "Method Not Allowed"),
-	INTERNAL_SERVER_ERROR(500, "C008", "Server Error"),
+	INVALID_TOKEN(401, "C006", "Invalid Token"),
+	ACCESS_DENIED(403, "C007", "Access Denied"),
+	METHOD_NOT_ALLOWED(405, "C008", "Method Not Allowed"),
+	INTERNAL_SERVER_ERROR(500, "C009", "Server Error"),
 
 	// Business
 	BUSINESS_ERROR(400, "B000", "Business Error");

@@ -23,7 +23,7 @@ public class UserInfoResDto {
     private Boolean isForeign;
     private Boolean isFirstHouseBuyer;
     private Boolean isMarried;
-    private Integer yearsOfMarriage;
+    private Integer yearOfMarriage;
     private Boolean hasOtherLoans;
 
 }

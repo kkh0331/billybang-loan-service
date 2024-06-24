@@ -35,6 +35,7 @@ public interface LoanMapper {
     @Mapping(source = "loan.provider.providerName", target = "providerName")
     @Mapping(source = "loan.provider.imgUrl", target = "providerImgUrl")
     @Mapping(source = "loan.loanType.name", target = "loanType")
+    @Mapping(source = "loan.guaranteeAgency", target = "guaranteeAgencyName")
     @Mapping(source = "loan.loanLimits", target = "loanLimit", qualifiedByName = {"MaxLoanLimit"})
     @Mapping(source = "possibleLoanLimits", target = "userLoanLimit", qualifiedByName = {"MaxLoanLimit"})
     @Mapping(source = "possibleLoanLimits", target = "preferentialItems", qualifiedByName = {"GetPreferentialItems"})

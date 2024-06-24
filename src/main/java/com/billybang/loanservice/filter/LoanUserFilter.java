@@ -7,6 +7,7 @@ import com.billybang.loanservice.model.type.Occupation;
 import com.billybang.loanservice.model.type.TargetOccupationType;
 import com.billybang.loanservice.model.type.TargetType;
 import com.billybang.loanservice.utils.DateUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@Slf4j
 public class LoanUserFilter {
 
     public List<TargetType> filterUserTargets(List<LoanUserCondition> userConditions, UserResDto userResDto){
@@ -28,7 +30,7 @@ public class LoanUserFilter {
 
     private boolean isSatisfiedUserCondition(LoanUserCondition userCondition, UserResDto userResDto){
         UserInfoResDto userInfo = userResDto.getUserInfo();
-        return LoanFilter.isSatisfiedForTarget(userCondition.getForTarget(), userResDto)
+        return TargetFilter.isSatisfiedForTarget(userCondition.getForTarget(), userResDto)
                 && isSatisfiedAllowedForAnotherLoan(userCondition.getAllowedForAnotherLoan(), userInfo.getHasOtherLoans())
                 && isSatisfiedAllowedForForeigner(userCondition.getAllowedForForeigner(), userInfo.getIsForeign())
                 && isSatisfiedForFirstHomeBuyer(userCondition.getForFirstHomeBuyer(), userInfo.getIsFirstHouseBuyer())
@@ -75,7 +77,7 @@ public class LoanUserFilter {
     }
 
     private boolean isSatisfiedAge(Integer minAge, Integer maxAge, LocalDate birthDate){
-        int age = DateUtil.calcAge(birthDate);
+        int age = DateUtil.calcYear(birthDate);
         boolean isSatisfiedMinAge = (minAge == null || minAge <= age);
         boolean isSatisfiedMaxAge = (maxAge == null || age <= maxAge);
         return isSatisfiedMinAge && isSatisfiedMaxAge;

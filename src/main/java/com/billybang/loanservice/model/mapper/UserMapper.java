@@ -15,7 +15,7 @@ public class UserMapper {
     private UserInfoMapper userInfoMapper;
 
     public UserResDto getAvgData(UserStatus userStatus){
-        LocalDate birtDate = LocalDate.of(1998, 6, 20);
+        LocalDate birtDate = LocalDate.of(1978, 6, 20);
         return UserResDto.builder()
                 .userId(null)
                 .email(null)

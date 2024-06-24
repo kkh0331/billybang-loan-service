@@ -5,6 +5,7 @@ import com.billybang.loanservice.model.dto.response.PropertyResDto;
 import com.billybang.loanservice.model.dto.response.UserResDto;
 import com.billybang.loanservice.model.entity.loan.LoanPropertyCondition;
 import com.billybang.loanservice.model.type.TargetType;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ public class LoanPropertyFilter {
     }
 
     private boolean isSatisfiedPropertyCondition(LoanPropertyCondition propertyCondition, PropertyInfoDto propertyInfo, UserResDto userInfo){
-        return LoanFilter.isSatisfiedForTarget(propertyCondition.getForTarget(), userInfo)
+        return TargetFilter.isSatisfiedForTarget(propertyCondition.getForTarget(), userInfo)
                 && isSatisfiedHomePrice(propertyCondition.getMaxHomePrice(), propertyInfo.getPrice())
                 && isSatisfiedHomeSize(propertyCondition.getMaxHomeSize(), propertyInfo.getArea2());
     }
