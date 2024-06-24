@@ -107,7 +107,8 @@ public class LoanService {
         List<TargetType> filteredTargets = loanFilter.filterTargetsByUser(loan, userResDto);
 
         List<LoanLimit> possibleLoanLimits = loan.getLoanLimits().stream()
-                .filter(loanLimit -> loanFilter.isPossibleTarget(loanLimit.getForTarget(), initialTargets, filteredTargets))
+                .filter(loanLimit -> TargetFilter.isSatisfiedForTarget(loanLimit.getForTarget(), userResDto)
+                        && loanFilter.isPossibleTarget(loanLimit.getForTarget(), initialTargets, filteredTargets))
                 .toList();
 
         return loanMapper.toLoanDetailResDto(loan, possibleLoanLimits);
