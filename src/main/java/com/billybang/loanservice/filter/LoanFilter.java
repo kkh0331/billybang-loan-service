@@ -5,6 +5,7 @@ import com.billybang.loanservice.model.dto.request.LoansReqDto;
 import com.billybang.loanservice.model.dto.response.PropertyResDto;
 import com.billybang.loanservice.model.dto.response.UserResDto;
 import com.billybang.loanservice.model.entity.loan.Loan;
+import com.billybang.loanservice.model.entity.loan.LoanLimit;
 import com.billybang.loanservice.model.entity.loan.LoanPropertyCondition;
 import com.billybang.loanservice.model.entity.loan.LoanUserCondition;
 import com.billybang.loanservice.model.mapper.LoanQualifier;
@@ -36,62 +37,26 @@ public class LoanFilter {
         List<TargetType> filteredPropertyTargets = loanPropertyFilter.filterPropertyTargets(loan.getPropertyConditions(), propertyInfo, userInfo);
         List<TargetType> filteredUserTargets = loanUserFilter.filterUserTargets(loan.getUserConditions(), userInfo);
 
-        for(TargetType target : filteredPropertyTargets){
-            if(userTargets.contains(target)) {
-                if (filteredUserTargets.contains(target))
-                    return true;
-            } else if(userTargets.contains(TargetType.DEFAULT)){
-                if(filteredUserTargets.contains(TargetType.DEFAULT))
-                    return true;
-            } else {
-                return true;
-            }
-        }
+        List<TargetType> isPossiblePropertyTargets = filteredPropertyTargets.stream()
+                .filter(targetType -> isPossibleTarget(targetType, userTargets, filteredUserTargets)).toList();
+        List<TargetType> isPossibleUserTargets = filteredUserTargets.stream()
+                .filter(targetType -> isPossibleTarget(targetType, propertyTargets, filteredPropertyTargets)).toList();
 
-        for(TargetType target : filteredUserTargets){
-            if(propertyTargets.contains(target)) {
-                if (filteredPropertyTargets.contains(target))
-                    return true;
-            } else if(propertyTargets.contains(TargetType.DEFAULT)){
-                if(filteredPropertyTargets.contains(TargetType.DEFAULT))
-                    return true;
-            } else {
-                return true;
-            }
-        }
+        return !isPossiblePropertyTargets.isEmpty() || !isPossibleUserTargets.isEmpty();
 
-        return false;
     }
 
-    public List<TargetType> getUnSatisfiedTargetTypesByUser(Loan loan, UserResDto userInfo){
-        List<TargetType> filteredUserTargets = loanUserFilter.filterUserTargets(loan.getUserConditions(), userInfo);
-        return loan.getUserConditions().stream().map(LoanUserCondition::getForTarget)
-                .filter(targetType -> !filteredUserTargets.contains(targetType))
-                .toList();
+    public List<TargetType> filterTargetsByUser(Loan loan, UserResDto userResDto){
+        return loanUserFilter.filterUserTargets(loan.getUserConditions(), userResDto);
     }
 
-    public static boolean isSatisfiedForTarget(TargetType targetType, UserResDto userInfo){
-        Boolean isFirstHome = userInfo.getUserInfo().getIsFirstHouseBuyer();
-        switch(targetType){
-            case NEWLY_MARRIED -> {
-                Integer yearsOfMarriage = userInfo.getUserInfo().getYearsOfMarriage();
-                return yearsOfMarriage != null && yearsOfMarriage <= 7;
-            }
-            case MULTIPLE_CHILDREN -> {
-                Integer childrenCount = userInfo.getUserInfo().getChildrenCount();
-                return childrenCount != null && childrenCount >= 2;
-            }
-            case YOUTH -> {
-                int age = DateUtil.calcAge(userInfo.getBirthDate());
-                return 19 <= age && age <= 34;
-            }
-            case FIRST_HOME -> {
-                return isFirstHome != null && isFirstHome;
-            }
-            default -> {
-                return true;
-            }
+    public boolean isPossibleTarget(TargetType targetType, List<TargetType> initialTargets, List<TargetType> filteredTargets){
+        if(initialTargets.contains(targetType)){
+            return filteredTargets.contains(targetType);
+        } else if(initialTargets.contains(TargetType.DEFAULT)){
+            return filteredTargets.contains(TargetType.DEFAULT);
         }
+        return true;
     }
 
     public boolean filterByTermAndPrice(Loan loan, LoansReqDto loansReqDto){
