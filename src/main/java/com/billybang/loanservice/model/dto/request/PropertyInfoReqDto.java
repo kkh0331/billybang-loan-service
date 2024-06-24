@@ -1,19 +1,20 @@
-package com.billybang.loanservice.model.dto.response;
+package com.billybang.loanservice.model.dto.request;
 
 import com.billybang.loanservice.model.dto.property.PropertyInfoDto;
 import com.billybang.loanservice.model.type.TradeType;
-import lombok.*;
+import lombok.Getter;
+import lombok.ToString;
 
 @Getter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 @ToString
-public class PropertyResDto {
+public class PropertyInfoReqDto {
 
-    private String articleName;
+    private Long propertyId;
+
     private TradeType tradeType;
+
     private int area2;
+
     private int price;
 
     public PropertyInfoDto toPropertyInfoDto(){
