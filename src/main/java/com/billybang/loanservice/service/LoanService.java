@@ -96,15 +96,19 @@ public class LoanService {
         Loan loan = loanRepository.findById(loanId)
             .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "Loan"));
 
+        Optional<StarredLoan> starredLoan = starredLoanRepository.findByLoanIdAndUserId(loanId, userResDto.getUserId());
+        if(starredLoan.isPresent()) loan.setIsStarred(true);
+
+        if(userResDto.getUserStatus() != UserStatus.NORMAL){
+            return loanMapper.toLoanDetailResDto(loan, null);
+        }
+
         List<TargetType> initialTargets = loan.getUserConditions().stream().map(LoanUserCondition::getForTarget).toList();
         List<TargetType> filteredTargets = loanFilter.filterTargetsByUser(loan, userResDto);
 
         List<LoanLimit> possibleLoanLimits = loan.getLoanLimits().stream()
                 .filter(loanLimit -> loanFilter.isPossibleTarget(loanLimit.getForTarget(), initialTargets, filteredTargets))
                 .toList();
-
-        Optional<StarredLoan> starredLoan = starredLoanRepository.findByLoanIdAndUserId(loanId, userResDto.getUserId());
-        if(starredLoan.isPresent()) loan.setIsStarred(true);
 
         return loanMapper.toLoanDetailResDto(loan, possibleLoanLimits);
     }
