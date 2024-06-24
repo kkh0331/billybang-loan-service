@@ -3,7 +3,7 @@ package com.billybang.loanservice.model.dto.request;
 import lombok.Getter;
 
 @Getter
-public class SaveStarredLoanReqDto {
+public class StarredLoanReqDto {
 
     private Long loanId;
 

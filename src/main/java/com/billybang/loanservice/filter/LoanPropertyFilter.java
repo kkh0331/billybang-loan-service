@@ -1,5 +1,6 @@
 package com.billybang.loanservice.filter;
 
+import com.billybang.loanservice.model.dto.property.PropertyInfoDto;
 import com.billybang.loanservice.model.dto.response.PropertyResDto;
 import com.billybang.loanservice.model.dto.response.UserResDto;
 import com.billybang.loanservice.model.entity.loan.LoanPropertyCondition;
@@ -12,7 +13,7 @@ import java.util.List;
 @Component
 public class LoanPropertyFilter {
 
-    public List<TargetType> filterPropertyTargets(List<LoanPropertyCondition> propertyConditions, PropertyResDto propertyInfo, UserResDto userInfo){
+    public List<TargetType> filterPropertyTargets(List<LoanPropertyCondition> propertyConditions, PropertyInfoDto propertyInfo, UserResDto userInfo){
         List<TargetType> filteredPropertyTargets = new ArrayList<>();
         for(LoanPropertyCondition propertyCondition : propertyConditions){
             if(isSatisfiedPropertyCondition(propertyCondition, propertyInfo, userInfo)) {
@@ -22,7 +23,7 @@ public class LoanPropertyFilter {
         return filteredPropertyTargets;
     }
 
-    private boolean isSatisfiedPropertyCondition(LoanPropertyCondition propertyCondition, PropertyResDto propertyInfo, UserResDto userInfo){
+    private boolean isSatisfiedPropertyCondition(LoanPropertyCondition propertyCondition, PropertyInfoDto propertyInfo, UserResDto userInfo){
         return LoanFilter.isSatisfiedForTarget(propertyCondition.getForTarget(), userInfo)
                 && isSatisfiedHomePrice(propertyCondition.getMaxHomePrice(), propertyInfo.getPrice())
                 && isSatisfiedHomeSize(propertyCondition.getMaxHomeSize(), propertyInfo.getArea2());

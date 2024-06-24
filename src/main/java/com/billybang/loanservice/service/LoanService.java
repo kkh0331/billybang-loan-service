@@ -5,7 +5,8 @@ import com.billybang.loanservice.client.PropertyServiceClient;
 import com.billybang.loanservice.client.UserServiceClient;
 import com.billybang.loanservice.exception.common.BError;
 import com.billybang.loanservice.exception.common.CommonException;
-import com.billybang.loanservice.model.dto.request.GetLoansReqDto;
+import com.billybang.loanservice.model.dto.request.LoansReqDto;
+import com.billybang.loanservice.model.dto.request.PropertyInfoReqDto;
 import com.billybang.loanservice.model.entity.loan.LoanLimit;
 import com.billybang.loanservice.model.entity.star.StarredLoan;
 import com.billybang.loanservice.model.mapper.LoanMapper;
@@ -21,7 +22,6 @@ import com.billybang.loanservice.model.type.TradeType;
 import com.billybang.loanservice.model.type.UserStatus;
 import com.billybang.loanservice.repository.loan.LoanRepository;
 import com.billybang.loanservice.repository.star.StarredLoanRepository;
-import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -44,12 +44,12 @@ public class LoanService {
     private final LoanCategoryMapper loanCategoryMapper;
 
     @Transactional
-    public LoanResDto getLoans(PropertyResDto propertyInfo, UserResDto userInfo, GetLoansReqDto loansReqDto) {
-        LoanType loanType = toLoanType(propertyInfo.getTradeType());
+    public LoanResDto getLoans(PropertyResDto propertyResDto, UserResDto userInfo, LoansReqDto loansReqDto) {
+        LoanType loanType = toLoanType(propertyResDto.getTradeType());
         List<LoanType> loanTypes = Arrays.asList(loanType, LoanType.PERSONAL);
         List<Loan> loans = loanRepository.findAllByLoanTypeInOrderByMinInterestRateAsc(loanTypes)
                 .stream()
-                .filter(loan -> loanFilter.filterByPropertyAndUser(loan, propertyInfo, userInfo))
+                .filter(loan -> loanFilter.filterByPropertyAndUser(loan, propertyResDto.toPropertyInfoDto(), userInfo))
                 .filter(loan -> loanFilter.filterByTermAndPrice(loan, loansReqDto))
                 .toList();
 
@@ -58,7 +58,7 @@ public class LoanService {
 
         List<LoanCategoryDto> loanCategoryDtos = loanCategoryMapper.loansToLoanCategoryDtos(loans);
         return LoanResDto.builder()
-                .buildingName(propertyInfo.getArticleName())
+                .buildingName(propertyResDto.getArticleName())
                 .sumCount(loans.size())
                 .userStatus(userInfo.getUserStatus())
                 .loanCategories(loanCategoryDtos)
@@ -66,13 +66,27 @@ public class LoanService {
     }
 
     @Transactional
-    public LoanSimpleResDto getLoanSimple(PropertyResDto propertyInfo, UserResDto userInfo) {
-        LoanType loanType = toLoanType(propertyInfo.getTradeType());
-        Optional<Loan> resultLoan = loanRepository.findAllByLoanTypeOrderByMinInterestRateAsc(loanType)
-                .stream().filter(loan -> loanFilter.filterByPropertyAndUser(loan, propertyInfo, userInfo))
+    public List<LoanBestResDto> getLoansBest(List<PropertyInfoReqDto> properties, UserResDto userInfo) {
+        Map<TradeType, List<Loan>> loansByTradeType = Map.of(
+                TradeType.DEAL, loanRepository.findAllByLoanTypeOrderByMinInterestRateAsc(LoanType.MORTGAGE),
+                TradeType.LEASE, loanRepository.findAllByLoanTypeOrderByMinInterestRateAsc(LoanType.JEONSE)
+        );
+
+        return properties.stream()
+                .map(propertyInfoReqDto -> findBestLoanForProperty(propertyInfoReqDto, userInfo, loansByTradeType))
+                .toList();
+    }
+
+    private LoanBestResDto findBestLoanForProperty(PropertyInfoReqDto propertyInfoReqDto, UserResDto userInfo, Map<TradeType, List<Loan>> loansByTradeType) {
+        List<Loan> relevantLoans = loansByTradeType.get(propertyInfoReqDto.getTradeType());
+        Optional<Loan> resultLoan = relevantLoans.stream()
+                .filter(loan -> loanFilter.filterByPropertyAndUser(loan, propertyInfoReqDto.toPropertyInfoDto(), userInfo))
                 .findFirst();
-        if(resultLoan.isEmpty()) throw new CommonException(BError.NOT_EXIST, "LoansByLoanType");
-        return loanMapper.toLoanSimpleResDto(resultLoan.get());
+
+        return LoanBestResDto.builder()
+                .propertyId(propertyInfoReqDto.getPropertyId())
+                .loan(loanMapper.toLoanSimpleResDto(resultLoan.orElse(null)))
+                .build();
     }
 
     @Transactional
