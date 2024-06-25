@@ -12,20 +12,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class LoanPropertyFilter {
 
-    public List<TargetType> filterPropertyTargets(List<LoanPropertyCondition> propertyConditions, PropertyInfoDto propertyInfo, UserResDto userInfo){
+    private final TargetFilter targetFilter;
+
+    public List<TargetType> filterPropertyTargets(List<LoanPropertyCondition> propertyConditions, PropertyInfoDto propertyInfo, UserResDto userResDto){
         List<TargetType> filteredPropertyTargets = new ArrayList<>();
         for(LoanPropertyCondition propertyCondition : propertyConditions){
-            if(isSatisfiedPropertyCondition(propertyCondition, propertyInfo, userInfo)) {
+            if(isSatisfiedPropertyCondition(propertyCondition, propertyInfo, userResDto)) {
                 filteredPropertyTargets.add(propertyCondition.getForTarget());
             }
         }
         return filteredPropertyTargets;
     }
 
-    private boolean isSatisfiedPropertyCondition(LoanPropertyCondition propertyCondition, PropertyInfoDto propertyInfo, UserResDto userInfo){
-        return TargetFilter.isSatisfiedForTarget(propertyCondition.getForTarget(), userInfo)
+    private boolean isSatisfiedPropertyCondition(LoanPropertyCondition propertyCondition, PropertyInfoDto propertyInfo, UserResDto userResDto){
+        return targetFilter.isSatisfiedForTarget(propertyCondition.getForTarget(), userResDto)
                 && isSatisfiedHomePrice(propertyCondition.getMaxHomePrice(), propertyInfo.getPrice())
                 && isSatisfiedHomeSize(propertyCondition.getMaxHomeSize(), propertyInfo.getArea2());
     }

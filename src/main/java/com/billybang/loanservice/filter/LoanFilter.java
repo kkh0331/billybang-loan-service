@@ -26,16 +26,15 @@ public class LoanFilter {
     private final LoanUserFilter loanUserFilter;
     private final LoanQualifier loanQualifier;
 
-    public boolean filterByPropertyAndUser(Loan loan, PropertyInfoDto propertyInfo, UserResDto userInfo){
-        boolean isEmptyPropertyConditions = loan.getPropertyConditions().isEmpty();
-        boolean isEmptyUserConditions = loan.getUserConditions().isEmpty();
-        if(isEmptyPropertyConditions && isEmptyUserConditions) return true;
+    public boolean filterByPropertyAndUser(Loan loan, PropertyInfoDto propertyInfo, UserResDto userResDto){
 
         List<TargetType> propertyTargets = loan.getPropertyConditions().stream().map(LoanPropertyCondition::getForTarget).toList();
         List<TargetType> userTargets = loan.getUserConditions().stream().map(LoanUserCondition::getForTarget).toList();
 
-        List<TargetType> filteredPropertyTargets = loanPropertyFilter.filterPropertyTargets(loan.getPropertyConditions(), propertyInfo, userInfo);
-        List<TargetType> filteredUserTargets = loanUserFilter.filterUserTargets(loan.getUserConditions(), userInfo);
+        if(propertyTargets.isEmpty() && userTargets.isEmpty()) return true;
+
+        List<TargetType> filteredPropertyTargets = loanPropertyFilter.filterPropertyTargets(loan.getPropertyConditions(), propertyInfo, userResDto);
+        List<TargetType> filteredUserTargets = loanUserFilter.filterUserTargets(loan.getUserConditions(), userResDto);
 
         List<TargetType> isPossiblePropertyTargets = filteredPropertyTargets.stream()
                 .filter(targetType -> isPossibleTarget(targetType, userTargets, filteredUserTargets)).toList();

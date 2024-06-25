@@ -7,6 +7,7 @@ import com.billybang.loanservice.model.type.Occupation;
 import com.billybang.loanservice.model.type.TargetOccupationType;
 import com.billybang.loanservice.model.type.TargetType;
 import com.billybang.loanservice.utils.DateUtil;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +17,10 @@ import java.util.List;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class LoanUserFilter {
+
+    private final TargetFilter targetFilter;
 
     public List<TargetType> filterUserTargets(List<LoanUserCondition> userConditions, UserResDto userResDto){
         List<TargetType> filteredUserTargets = new ArrayList<>();
@@ -30,7 +34,7 @@ public class LoanUserFilter {
 
     private boolean isSatisfiedUserCondition(LoanUserCondition userCondition, UserResDto userResDto){
         UserInfoResDto userInfo = userResDto.getUserInfo();
-        return TargetFilter.isSatisfiedForTarget(userCondition.getForTarget(), userResDto)
+        return targetFilter.isSatisfiedForTarget(userCondition.getForTarget(), userResDto)
                 && isSatisfiedAllowedForAnotherLoan(userCondition.getAllowedForAnotherLoan(), userInfo.getHasOtherLoans())
                 && isSatisfiedAllowedForForeigner(userCondition.getAllowedForForeigner(), userInfo.getIsForeign())
                 && isSatisfiedForFirstHomeBuyer(userCondition.getForFirstHomeBuyer(), userInfo.getIsFirstHouseBuyer())

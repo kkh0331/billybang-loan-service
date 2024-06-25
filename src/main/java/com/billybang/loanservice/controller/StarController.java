@@ -22,15 +22,13 @@ import java.util.List;
 public class StarController implements StarApi {
 
     private final StarService starService;
-    private final LoanService loanService;
 
     @Override
     public ResponseEntity<?> saveStarredLoan(StarredLoanReqDto starredLoanReqDto) {
         Long loanId = starredLoanReqDto.getLoanId();
-        Loan loan = loanService.getLoanByLoanId(loanId);
         Long userId = starService.getUserId();
         log.info("saveStarredLoan userId : {}", userId);
-        starService.saveStarredLoan(loan, userId);
+        starService.saveStarredLoan(loanId, userId);
         return ResponseEntity.created(null).body(ApiUtils.success(null));
     }
 
