@@ -9,6 +9,7 @@ public class TargetFilter {
     public static boolean isSatisfiedForTarget(TargetType targetType, UserResDto userInfo){
         switch(targetType){
             case NEWLY_MARRIED -> {
+                if(userInfo.getUserInfo().getYearOfMarriage() == null) return false;
                 Integer yearsAfterMarriage = DateUtil.calcYear(userInfo.getUserInfo().getYearOfMarriage());
                 return yearsAfterMarriage <= 7;
             }
