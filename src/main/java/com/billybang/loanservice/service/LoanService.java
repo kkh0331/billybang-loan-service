@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -44,51 +45,60 @@ public class LoanService {
     private final UserMapper userMapper;
     private final LoanMapper loanMapper;
     private final LoanCategoryMapper loanCategoryMapper;
+    private final TargetFilter targetFilter;
 
     @Transactional
-    public LoanResDto getLoans(PropertyResDto propertyResDto, UserResDto userInfo, LoansReqDto loansReqDto) {
+    public LoanResDto getLoans(PropertyResDto propertyResDto, UserResDto userResDto, LoansReqDto loansReqDto) {
         LoanType loanType = toLoanType(propertyResDto.getTradeType());
         List<LoanType> loanTypes = Arrays.asList(loanType, LoanType.PERSONAL);
         List<Loan> loans = loanRepository.findAllByLoanTypeInOrderByMinInterestRateAsc(loanTypes)
                 .stream()
-                .filter(loan -> loanFilter.filterByPropertyAndUser(loan, propertyResDto.toPropertyInfoDto(), userInfo))
+                .filter(loan -> loanFilter.filterByPropertyAndUser(loan, propertyResDto.toPropertyInfoDto(), userResDto))
                 .filter(loan -> loanFilter.filterByTermAndPrice(loan, loansReqDto))
                 .toList();
 
-        List<Long> starredLoanIds = getStarredLoanIds(userInfo.getUserId());
+        List<Long> starredLoanIds = getStarredLoanIds(userResDto.getUserId());
         loans.forEach(loan -> loan.setIsStarred(starredLoanIds.contains(loan.getId())));
 
         List<LoanCategoryDto> loanCategoryDtos = loanCategoryMapper.loansToLoanCategoryDtos(loans);
         return LoanResDto.builder()
                 .buildingName(propertyResDto.getArticleName())
                 .sumCount(loans.size())
-                .userStatus(userInfo.getUserStatus())
+                .userStatus(userResDto.getUserStatus())
                 .loanCategories(loanCategoryDtos)
                 .build();
     }
 
     @Transactional
-    public List<LoanBestResDto> getLoansBest(List<PropertyInfoReqDto> properties, UserResDto userInfo) {
-        Map<TradeType, List<Loan>> loansByTradeType = Map.of(
-                TradeType.DEAL, loanRepository.findAllByLoanTypeOrderByMinInterestRateAsc(LoanType.MORTGAGE),
-                TradeType.LEASE, loanRepository.findAllByLoanTypeOrderByMinInterestRateAsc(LoanType.JEONSE)
-        );
+    public List<LoanBestResDto> getLoansBest(List<PropertyInfoReqDto> properties, UserResDto userResDto) {
+        List<Loan> loans = loanRepository.findAll();
+
+        Map<LoanType, List<Loan>> loansByLoanType = loans.stream().collect(Collectors.groupingBy(Loan::getLoanType));
 
         return properties.stream()
-                .map(propertyInfoReqDto -> findBestLoanForProperty(propertyInfoReqDto, userInfo, loansByTradeType))
+                .map(propertyInfoReqDto -> findBestLoanForProperty(propertyInfoReqDto, userResDto, loansByLoanType))
                 .toList();
     }
 
-    private LoanBestResDto findBestLoanForProperty(PropertyInfoReqDto propertyInfoReqDto, UserResDto userInfo, Map<TradeType, List<Loan>> loansByTradeType) {
-        List<Loan> relevantLoans = loansByTradeType.get(propertyInfoReqDto.getTradeType());
-        Optional<Loan> resultLoan = relevantLoans.stream()
-                .filter(loan -> loanFilter.filterByPropertyAndUser(loan, propertyInfoReqDto.toPropertyInfoDto(), userInfo))
-                .findFirst();
+    private LoanBestResDto findBestLoanForProperty(PropertyInfoReqDto propertyInfoReqDto, UserResDto userResDto, Map<LoanType, List<Loan>> loansByLoanType) {
+
+        Optional<Loan> resultLoan = findBestOne(toLoanType(propertyInfoReqDto.getTradeType()), propertyInfoReqDto, userResDto, loansByLoanType);
+
+        if(resultLoan.isEmpty()){
+            resultLoan = findBestOne(LoanType.PERSONAL, propertyInfoReqDto, userResDto, loansByLoanType);
+        }
 
         return LoanBestResDto.builder()
                 .propertyId(propertyInfoReqDto.getPropertyId())
                 .loan(loanMapper.toLoanSimpleResDto(resultLoan.orElse(null)))
                 .build();
+    }
+
+    private Optional<Loan> findBestOne(LoanType loanType, PropertyInfoReqDto propertyInfoReqDto, UserResDto userResDto, Map<LoanType, List<Loan>> loansByLoanType){
+        List<Loan> relevantLoans = loansByLoanType.get(loanType);
+        return relevantLoans.stream()
+                .filter(loan -> loanFilter.filterByPropertyAndUser(loan, propertyInfoReqDto.toPropertyInfoDto(), userResDto))
+                .findFirst();
     }
 
     @Transactional
@@ -107,29 +117,23 @@ public class LoanService {
         List<TargetType> filteredTargets = loanFilter.filterTargetsByUser(loan, userResDto);
 
         List<LoanLimit> possibleLoanLimits = loan.getLoanLimits().stream()
-                .filter(loanLimit -> TargetFilter.isSatisfiedForTarget(loanLimit.getForTarget(), userResDto)
+                .filter(loanLimit -> targetFilter.isSatisfiedForTarget(loanLimit.getForTarget(), userResDto)
                         && loanFilter.isPossibleTarget(loanLimit.getForTarget(), initialTargets, filteredTargets))
                 .toList();
 
         return loanMapper.toLoanDetailResDto(loan, possibleLoanLimits);
     }
 
-    @Transactional
-    public Loan getLoanByLoanId(Long loanId){
-        return loanRepository.findById(loanId)
-                .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "Loan"));
-    }
-
     public UserResDto getUserInfo() {
         ApiResult<ValidateTokenResDto> validateToken = userServiceClient.validateToken();
         if(validateToken.getResponse().getIsValid()){
             ApiResult<UserResDto> response = userServiceClient.getUserInfo();
-            return processResponse(response);
+            return getAvgData(response);
         }
         return userMapper.getAvgData(UserStatus.UNAUTHORIZED);
     }
 
-    private UserResDto processResponse(ApiResult<UserResDto> response){
+    private UserResDto getAvgData(ApiResult<UserResDto> response){
         if (response.isSuccess()) {
             UserResDto userResponse = response.getResponse();
             if (userResponse.getUserInfo() == null) {
