@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -70,26 +71,34 @@ public class LoanService {
 
     @Transactional
     public List<LoanBestResDto> getLoansBest(List<PropertyInfoReqDto> properties, UserResDto userResDto) {
-        Map<TradeType, List<Loan>> loansByTradeType = Map.of(
-                TradeType.DEAL, loanRepository.findAllByLoanTypeOrderByMinInterestRateAsc(LoanType.MORTGAGE),
-                TradeType.LEASE, loanRepository.findAllByLoanTypeOrderByMinInterestRateAsc(LoanType.JEONSE)
-        );
+        List<Loan> loans = loanRepository.findAll();
+
+        Map<LoanType, List<Loan>> loansByLoanType = loans.stream().collect(Collectors.groupingBy(Loan::getLoanType));
 
         return properties.stream()
-                .map(propertyInfoReqDto -> findBestLoanForProperty(propertyInfoReqDto, userResDto, loansByTradeType))
+                .map(propertyInfoReqDto -> findBestLoanForProperty(propertyInfoReqDto, userResDto, loansByLoanType))
                 .toList();
     }
 
-    private LoanBestResDto findBestLoanForProperty(PropertyInfoReqDto propertyInfoReqDto, UserResDto userResDto, Map<TradeType, List<Loan>> loansByTradeType) {
-        List<Loan> relevantLoans = loansByTradeType.get(propertyInfoReqDto.getTradeType());
-        Optional<Loan> resultLoan = relevantLoans.stream()
-                .filter(loan -> loanFilter.filterByPropertyAndUser(loan, propertyInfoReqDto.toPropertyInfoDto(), userResDto))
-                .findFirst();
+    private LoanBestResDto findBestLoanForProperty(PropertyInfoReqDto propertyInfoReqDto, UserResDto userResDto, Map<LoanType, List<Loan>> loansByLoanType) {
+
+        Optional<Loan> resultLoan = findBestOne(toLoanType(propertyInfoReqDto.getTradeType()), propertyInfoReqDto, userResDto, loansByLoanType);
+
+        if(resultLoan.isEmpty()){
+            resultLoan = findBestOne(LoanType.PERSONAL, propertyInfoReqDto, userResDto, loansByLoanType);
+        }
 
         return LoanBestResDto.builder()
                 .propertyId(propertyInfoReqDto.getPropertyId())
                 .loan(loanMapper.toLoanSimpleResDto(resultLoan.orElse(null)))
                 .build();
+    }
+
+    private Optional<Loan> findBestOne(LoanType loanType, PropertyInfoReqDto propertyInfoReqDto, UserResDto userResDto, Map<LoanType, List<Loan>> loansByLoanType){
+        List<Loan> relevantLoans = loansByLoanType.get(loanType);
+        return relevantLoans.stream()
+                .filter(loan -> loanFilter.filterByPropertyAndUser(loan, propertyInfoReqDto.toPropertyInfoDto(), userResDto))
+                .findFirst();
     }
 
     @Transactional
